@@ -2,8 +2,8 @@
 // These hooks serve as placeholders for a real Firebase implementation
 // They wrap our local Zustand store to simulate async operations and latency.
 
-import { useState, useCallback } from 'react';
-import { useElectionStore, Candidate } from '@/store/useElectionStore';
+import { useState } from 'react';
+import { useElectionStore } from '@/store/useElectionStore';
 
 // Mock latency to simulate network requests
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -12,8 +12,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  * Placeholder for: useAuthState(auth)
  */
 export function useFirebaseAuth() {
-  const userRole = useElectionStore(state => state.userRole);
-  const userEmail = useElectionStore(state => state.userEmail);
+  const session = useElectionStore(state => state.session);
   const isVerified = useElectionStore(state => state.isVerified);
   const logout = useElectionStore(state => state.logout);
   const login = useElectionStore(state => state.login);
@@ -28,7 +27,7 @@ export function useFirebaseAuth() {
   };
 
   return {
-    user: userEmail ? { email: userEmail, role: userRole, emailVerified: isVerified } : null,
+    user: session.email ? { email: session.email, role: session.role, emailVerified: isVerified } : null,
     loading,
     signOut,
     login // exposed for mock testing
@@ -43,7 +42,7 @@ export function useEmailLinkAuth() {
   const [error, setError] = useState<string | null>(null);
   const login = useElectionStore(state => state.login);
   
-  const sendEmailLink = async (email: string, role: 'voter' | 'admin' = 'voter') => {
+  const sendEmailLink = async (email: string, role: any = 'voter') => {
     setIsSending(true);
     setError(null);
     try {
@@ -64,16 +63,18 @@ export function useEmailLinkAuth() {
 /**
  * Placeholder for: useDocument(doc(db, 'elections', electionId))
  */
-export function useFirestoreElection() {
-  const election = useElectionStore(state => state.election);
+export function useFirestoreElection(electionId?: string) {
+  const elections = useElectionStore(state => state.elections);
   const toggleElection = useElectionStore(state => state.toggleElection);
   
+  const election = elections.find(e => e.id === electionId);
   const [loading, setLoading] = useState(false);
 
   const updateElectionStatus = async (isActive: boolean) => {
+    if (!electionId) return;
     setLoading(true);
     await delay(800);
-    toggleElection(isActive);
+    toggleElection(electionId, isActive);
     setLoading(false);
   };
 
@@ -88,11 +89,12 @@ export function useVoteSubmission() {
   const [error, setError] = useState<string | null>(null);
   
   const submitVoteAction = useElectionStore(state => state.submitVote);
-  const hasVoted = useElectionStore(state => state.hasVoted);
+  const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
 
-  const submitVote = async (candidateId: string) => {
-    if (hasVoted) {
-      setError('You have already cast your vote.');
+  const submitVote = async (electionId: string, categoryId: string, candidateId: string) => {
+    const voted = hasVotedCategories[electionId] || [];
+    if (voted.includes(categoryId)) {
+      setError('You have already cast your vote in this category.');
       return false;
     }
 
@@ -100,7 +102,7 @@ export function useVoteSubmission() {
     setError(null);
     try {
       await delay(1500); // Simulate secure transaction latency
-      submitVoteAction(candidateId);
+      submitVoteAction(electionId, categoryId, candidateId);
       return true;
     } catch (err: any) {
       setError('Transaction failed. Please try again.');
@@ -110,14 +112,17 @@ export function useVoteSubmission() {
     }
   };
 
-  return { submitVote, isSubmitting, error, hasVoted };
+  return { submitVote, isSubmitting, error };
 }
 
 /**
  * Placeholder for: useCollection(collection(db, 'candidates'))
  */
-export function useRealtimeVotes() {
-  const candidates = useElectionStore(state => state.candidates);
+export function useRealtimeVotes(electionId?: string) {
+  const elections = useElectionStore(state => state.elections);
+  const election = elections.find(e => e.id === electionId);
+  
+  const candidates = election?.categories.flatMap(c => c.candidates) || [];
   
   return {
     candidates,

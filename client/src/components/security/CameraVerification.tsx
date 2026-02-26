@@ -48,13 +48,11 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Mirror the canvas to match the mirrored video
         ctx.translate(canvas.width, 0);
         ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
         setCapturedImage(dataUrl);
-        // Stop stream after capture
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
           setStream(null);
@@ -87,7 +85,7 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
         <div className="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center">
           <ShieldCheck className="w-10 h-10 text-success" />
         </div>
-        <h3 className="text-xl font-semibold">Identity Verified</h3>
+        <h3 className="text-xl font-semibold text-foreground">Identity Verified</h3>
         <p className="text-muted-foreground text-center">Your biometric data matched the registered profile.</p>
       </div>
     );
@@ -156,10 +154,6 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
           </>
         )}
       </div>
-      
-      <p className="text-xs text-muted-foreground text-center">
-        * Simulated browser camera API. No data is sent to any external server.
-      </p>
     </div>
   );
 }

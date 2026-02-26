@@ -10,7 +10,9 @@ import { AuthGuard } from "@/components/security/AuthGuard";
 
 import { Landing } from "@/pages/public/Landing";
 import { Verification } from "@/pages/public/Verification";
-import { Voting } from "@/pages/public/Voting";
+import { VoterDashboard } from "@/pages/public/VoterDashboard";
+import { CategorySelection } from "@/pages/public/CategorySelection";
+import { CandidateDetail } from "@/pages/public/CandidateDetail";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
 
 function Router() {
@@ -27,9 +29,21 @@ function Router() {
             </AuthGuard>
           </Route>
           
-          <Route path="/voting">
-            <AuthGuard requireRole="voter" requireActiveElection={true}>
-              <Voting />
+          <Route path="/dashboard">
+            <AuthGuard requireRole="voter">
+              <VoterDashboard />
+            </AuthGuard>
+          </Route>
+
+          <Route path="/election/:id">
+            <AuthGuard requireRole="voter">
+              <CategorySelection />
+            </AuthGuard>
+          </Route>
+
+          <Route path="/election/:eid/category/:cid">
+            <AuthGuard requireRole="voter">
+              <CandidateDetail />
             </AuthGuard>
           </Route>
           

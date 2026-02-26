@@ -1,162 +1,133 @@
 import { useState } from "react";
-import { useElectionStore } from "@/store/useElectionStore";
+import { useElectionStore, ElectionType, Category } from "@/store/useElectionStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Activity, Users, Vote, ShieldAlert } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Trash, Save, LayoutDashboard, Settings2, Clock } from "lucide-react";
 
 export function AdminDashboard() {
-  const candidates = useElectionStore(state => state.candidates);
-  const election = useElectionStore(state => state.election);
+  const elections = useElectionStore(state => state.elections);
   const toggleElection = useElectionStore(state => state.toggleElection);
-  const securityFlags = useElectionStore(state => state.securityFlags);
-  
-  const totalVotes = candidates.reduce((sum, c) => sum + c.votes, 0);
+  const createElection = useElectionStore(state => state.createElection);
+  const [showWizard, setShowWizard] = useState(false);
 
-  // Colors based on theme but static for chart
-  const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#6366f1'];
+  // Wizard state
+  const [newTitle, setNewTitle] = useState("");
+  const [newType, setNewType] = useState<ElectionType>("college");
+  const [newCategories, setNewCategories] = useState<Omit<Category, 'id'>[]>([]);
+
+  const handleCreate = () => {
+    createElection({
+      title: newTitle,
+      description: `Official ${newType} election`,
+      type: newType,
+      isActive: false,
+      startTime: new Date().toISOString(),
+      endTime: new Date(Date.now() + 604800000).toISOString(),
+      categories: newCategories.map(c => ({ ...c, id: `cat-${Math.random()}` }))
+    });
+    setShowWizard(false);
+  };
 
   return (
     <div className="container py-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Election Command Center</h1>
-          <p className="text-muted-foreground">Monitor live results and system security.</p>
+          <h1 className="text-4xl font-bold tracking-tight">System Administration</h1>
+          <p className="text-muted-foreground mt-1">Global election management and lifecycle control.</p>
         </div>
-        
-        <div className="flex items-center gap-4 bg-card p-3 rounded-lg border border-border shadow-sm">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">Election Status</span>
-            <span className="text-xs text-muted-foreground">{election.isActive ? 'Accepting Votes' : 'Polling Closed'}</span>
-          </div>
-          <Switch 
-            checked={election.isActive} 
-            onCheckedChange={(checked) => toggleElection(checked)} 
-          />
-        </div>
+        <Button onClick={() => setShowWizard(true)}>
+          <Plus className="w-4 h-4 mr-2" /> New Election Wizard
+        </Button>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Votes Cast</CardTitle>
-            <Vote className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{totalVotes.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">+12% from last hour</p>
-          </CardContent>
-        </Card>
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Active Voters</CardTitle>
-            <Users className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">142</div>
-            <p className="text-xs text-muted-foreground mt-1">Currently verifying identity</p>
-          </CardContent>
-        </Card>
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">System Uptime</CardTitle>
-            <Activity className="w-4 h-4 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-success">99.99%</div>
-            <p className="text-xs text-muted-foreground mt-1">All nodes operational</p>
-          </CardContent>
-        </Card>
-        <Card className={`glass ${securityFlags.suspiciousActivity ? 'border-destructive' : ''}`}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Security Alerts</CardTitle>
-            <ShieldAlert className={`w-4 h-4 ${securityFlags.suspiciousActivity ? 'text-destructive' : 'text-muted-foreground'}`} />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-3xl font-bold ${securityFlags.suspiciousActivity ? 'text-destructive' : ''}`}>
-              {securityFlags.suspiciousActivity ? '2' : '0'}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {securityFlags.suspiciousActivity ? 'Duplicate IP detected' : 'No anomalies detected'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Chart */}
-        <Card className="lg:col-span-2 glass">
-          <CardHeader>
-            <CardTitle>Live Vote Tally</CardTitle>
-            <CardDescription>Real-time mock aggregate of encrypted ballots.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px] w-full mt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={candidates} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{fill: 'hsl(var(--muted-foreground))'}} 
-                    axisLine={false} 
-                    tickLine={false} 
-                    angle={-45} 
-                    textAnchor="end"
-                  />
-                  <YAxis 
-                    tick={{fill: 'hsl(var(--muted-foreground))'}} 
-                    axisLine={false} 
-                    tickLine={false}
-                  />
-                  <Tooltip 
-                    cursor={{fill: 'hsl(var(--muted)/0.4)'}}
-                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                    itemStyle={{ color: 'hsl(var(--foreground))' }}
-                  />
-                  <Bar dataKey="votes" radius={[6, 6, 0, 0]}>
-                    {candidates.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Security Log */}
-        <Card className="glass flex flex-col">
-          <CardHeader>
-            <CardTitle>Audit Log</CardTitle>
-            <CardDescription>Recent cryptographic events</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-auto">
-            <div className="space-y-4">
-              {[
-                { time: '10:42:15', event: 'Ballot cast', hash: '0x8f...3a2', type: 'info' },
-                { time: '10:41:02', event: 'Identity verified', hash: '0x1b...9c4', type: 'info' },
-                { time: '10:39:45', event: 'Ballot cast', hash: '0x44...ef1', type: 'info' },
-                { time: '10:35:12', event: 'Failed login attempt', hash: 'IP 192.168.1.1', type: 'warning' },
-                { time: '10:30:00', event: 'Admin session started', hash: 'admin@gov.org', type: 'info' },
-              ].map((log, i) => (
-                <div key={i} className="flex gap-3 text-sm">
-                  <div className="text-muted-foreground text-xs font-mono pt-0.5 w-16">{log.time}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full ${log.type === 'warning' ? 'bg-warning' : 'bg-success'}`} />
-                      <span className="font-medium">{log.event}</span>
-                    </div>
-                    <div className="text-xs text-muted-foreground font-mono mt-1">{log.hash}</div>
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {elections.map(election => (
+          <Card key={election.id} className="glass border-2">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <Badge className="capitalize">{election.type}</Badge>
+                <div className={`flex items-center gap-1.5 text-xs font-bold ${election.isActive ? 'text-success' : 'text-muted-foreground'}`}>
+                  <span className={`w-2 h-2 rounded-full ${election.isActive ? 'bg-success animate-pulse' : 'bg-muted-foreground'}`} />
+                  {election.isActive ? 'LIVE' : 'OFFLINE'}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+              <CardTitle className="mt-2">{election.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Categories</span><span>{election.categories.length}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Ends</span><span className="font-mono text-[10px] uppercase">{new Date(election.endTime).toLocaleDateString()}</span></div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex gap-2 border-t border-border/40 pt-4">
+              <Button 
+                variant={election.isActive ? "destructive" : "default"} 
+                size="sm" 
+                className="flex-1"
+                onClick={() => toggleElection(election.id, !election.isActive)}
+              >
+                {election.isActive ? "Emergency Stop" : "Go Live"}
+              </Button>
+              <Button variant="outline" size="sm"><Settings2 className="w-4 h-4" /></Button>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
+
+      {showWizard && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+            <CardHeader>
+              <CardTitle>Election Creation Wizard</CardTitle>
+              <CardDescription>Configure election rules, categories, and eligibility.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Election Title</Label>
+                  <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g., Annual Board Review" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Election Type</Label>
+                  <Select value={newType} onValueChange={(v: ElectionType) => setNewType(v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="college">College/University</SelectItem>
+                      <SelectItem value="company">Corporate/Company</SelectItem>
+                      <SelectItem value="society">Society/Community</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center"><Label>Voting Categories</Label><Button size="xs" onClick={() => setNewCategories([...newCategories, { name: "", description: "", candidates: [] }])}><Plus className="w-3 h-3 mr-1" /> Add</Button></div>
+                {newCategories.map((cat, idx) => (
+                  <div key={idx} className="flex gap-2 items-start bg-muted/30 p-2 rounded-lg border">
+                    <Input value={cat.name} onChange={e => {
+                      const updated = [...newCategories];
+                      updated[idx].name = e.target.value;
+                      setNewCategories(updated);
+                    }} placeholder="Category Name" className="h-8" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setNewCategories(newCategories.filter((_, i) => i !== idx))}><Trash className="w-4 h-4" /></Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2 border-t pt-4">
+              <Button variant="outline" onClick={() => setShowWizard(false)}>Cancel</Button>
+              <Button onClick={handleCreate} disabled={!newTitle || newCategories.length === 0}>Deploy Election</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
+}
+
+function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${className}`}>{children}</span>;
 }

@@ -1,195 +1,195 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Role = 'voter' | 'admin' | null;
+export type Role = 'Student' | 'Employee' | 'Society Member' | 'admin' | null;
+export type ElectionType = 'college' | 'company' | 'society';
 export type VerificationStep = 'idle' | 'email_sent' | 'email_verified' | 'camera_pending' | 'camera_verified';
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  candidates: Candidate[];
+}
 
 export interface Candidate {
   id: string;
   name: string;
   party: string;
   description: string;
+  manifesto: string;
+  advantages: string[];
+  disadvantages: string[];
   votes: number;
   imageUrl: string;
 }
 
+export interface Election {
+  id: string;
+  title: string;
+  description: string;
+  type: ElectionType;
+  isActive: boolean;
+  categories: Category[];
+  startTime: string;
+  endTime: string;
+}
+
+interface UserSession {
+  email: string | null;
+  role: Role;
+  identifier: string | null; // Student ID, Employee ID, etc.
+}
+
 interface ElectionStore {
   // Session State
-  userRole: Role;
-  userEmail: string | null;
+  session: UserSession;
   
-  // Voter State
-  hasVoted: boolean;
+  // Voter Progress
+  hasVotedCategories: Record<string, string[]>; // electionId -> categoryIds[]
   verificationStep: VerificationStep;
   isVerified: boolean;
   identityPhotoUrl: string | null;
   
-  // Election State
-  election: {
-    isActive: boolean;
-    title: string;
-    description: string;
-    endDate: string | null;
-  };
-  
-  // Candidates Data
-  candidates: Candidate[];
-  
-  // Security State
-  securityFlags: {
-    suspiciousActivity: boolean;
-    multipleTabs: boolean;
-    deviceFingerprint: string | null;
-  };
+  // Elections Data
+  elections: Election[];
   
   // Actions
-  login: (email: string, role: Role) => void;
+  login: (email: string, role: Role, identifier?: string) => void;
   logout: () => void;
   setVerificationStep: (step: VerificationStep) => void;
   setIdentityPhoto: (url: string) => void;
-  submitVote: (candidateId: string) => void;
+  submitVote: (electionId: string, categoryId: string, candidateId: string) => void;
   
   // Admin Actions
-  toggleElection: (isActive: boolean) => void;
-  addCandidate: (candidate: Omit<Candidate, 'id' | 'votes'>) => void;
-  updateCandidate: (id: string, updates: Partial<Candidate>) => void;
-  deleteCandidate: (id: string) => void;
-  
-  // Security Actions
-  flagSuspiciousActivity: (flag: boolean) => void;
-  setDeviceFingerprint: (fingerprint: string) => void;
+  createElection: (election: Omit<Election, 'id'>) => void;
+  toggleElection: (id: string, isActive: boolean) => void;
+  deleteElection: (id: string) => void;
 }
 
-// Initial Mock Data
-const INITIAL_CANDIDATES: Candidate[] = [
+const MOCK_CANDIDATES: Candidate[] = [
   {
-    id: 'cand-1',
-    name: 'Eleanor Roosevelt',
-    party: 'Progressive Coalition',
-    description: 'Focused on digital rights, renewable energy, and infrastructure modernization.',
-    votes: 1420,
-    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eleanor&backgroundColor=b6e3f4'
+    id: 'c1',
+    name: 'Sarah Chen',
+    party: 'Innovation Party',
+    description: 'Leading with technology and transparency.',
+    manifesto: 'I believe in a digital-first approach to governance where every citizen has a voice through secure platforms.',
+    advantages: ['Tech background', 'Youthful energy', 'Strong communicator'],
+    disadvantages: ['Limited political experience'],
+    votes: 45,
+    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
   },
   {
-    id: 'cand-2',
-    name: 'Marcus Aurelius',
-    party: 'Conservative Union',
-    description: 'Advocating for economic stability, reduced regulation, and strong national security.',
-    votes: 1250,
-    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus&backgroundColor=ffdfbf'
+    id: 'c2',
+    name: 'James Wilson',
+    party: 'Heritage Group',
+    description: 'Stability and proven leadership.',
+    manifesto: 'Experience matters. I will ensure our traditions are preserved while making sensible improvements.',
+    advantages: ['20 years experience', 'Proven track record'],
+    disadvantages: ['Slow to adapt to new tech'],
+    votes: 38,
+    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James'
+  }
+];
+
+const INITIAL_ELECTIONS: Election[] = [
+  {
+    id: 'e1',
+    title: 'University Student Council 2026',
+    description: 'Annual election for student representatives.',
+    type: 'college',
+    isActive: true,
+    startTime: new Date().toISOString(),
+    endTime: new Date(Date.now() + 86400000).toISOString(),
+    categories: [
+      { id: 'cat1', name: 'President', description: 'Head of the student body', candidates: MOCK_CANDIDATES },
+      { id: 'cat2', name: 'Treasurer', description: 'Financial oversight', candidates: MOCK_CANDIDATES }
+    ]
   },
   {
-    id: 'cand-3',
-    name: 'Ada Lovelace',
-    party: 'Tech Forward',
-    description: 'Championing STEM education, universal basic income, and AI ethics.',
-    votes: 890,
-    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ada&backgroundColor=c0aede'
+    id: 'e2',
+    title: 'Corporate Board Election',
+    description: 'Selection of employee representatives for the board.',
+    type: 'company',
+    isActive: true,
+    startTime: new Date().toISOString(),
+    endTime: new Date(Date.now() + 86400000).toISOString(),
+    categories: [
+      { id: 'cat3', name: 'Technical Rep', description: 'Represents engineering', candidates: MOCK_CANDIDATES }
+    ]
   }
 ];
 
 export const useElectionStore = create<ElectionStore>()(
   persist(
-    (set, get) => ({
-      userRole: null,
-      userEmail: null,
-      
-      hasVoted: false,
+    (set) => ({
+      session: { email: null, role: null, identifier: null },
+      hasVotedCategories: {},
       verificationStep: 'idle',
       isVerified: false,
       identityPhotoUrl: null,
-      
-      election: {
-        isActive: true,
-        title: 'National General Election 2026',
-        description: 'Select your preferred candidate for the upcoming term.',
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-      },
-      
-      candidates: INITIAL_CANDIDATES,
-      
-      securityFlags: {
-        suspiciousActivity: false,
-        multipleTabs: false,
-        deviceFingerprint: null,
-      },
-      
-      login: (email, role) => set({ 
-        userEmail: email, 
-        userRole: role,
-        verificationStep: role === 'voter' ? 'email_sent' : 'idle' 
+      elections: INITIAL_ELECTIONS,
+
+      login: (email, role, identifier) => set({ 
+        session: { email, role, identifier: identifier || null },
+        verificationStep: role !== 'admin' ? 'email_sent' : 'idle'
       }),
-      
+
       logout: () => set({ 
-        userRole: null, 
-        userEmail: null,
+        session: { email: null, role: null, identifier: null },
         verificationStep: 'idle',
         isVerified: false,
-        identityPhotoUrl: null,
-        hasVoted: false
+        identityPhotoUrl: null
       }),
-      
-      setVerificationStep: (step) => set((state) => {
-        if (step === 'camera_verified') {
-          return { verificationStep: step, isVerified: true };
-        }
-        return { verificationStep: step };
-      }),
-      
+
+      setVerificationStep: (step) => set((state) => ({
+        verificationStep: step,
+        isVerified: step === 'camera_verified'
+      })),
+
       setIdentityPhoto: (url) => set({ identityPhotoUrl: url }),
-      
-      submitVote: (candidateId) => set((state) => {
-        if (state.hasVoted) return state; // Block duplicate
-        
-        const updatedCandidates = state.candidates.map(c => 
-          c.id === candidateId ? { ...c, votes: c.votes + 1 } : c
-        );
-        
+
+      submitVote: (electionId, categoryId, candidateId) => set((state) => {
+        const voted = state.hasVotedCategories[electionId] || [];
+        if (voted.includes(categoryId)) return state;
+
+        const updatedElections = state.elections.map(e => {
+          if (e.id !== electionId) return e;
+          return {
+            ...e,
+            categories: e.categories.map(cat => {
+              if (cat.id !== categoryId) return cat;
+              return {
+                ...cat,
+                candidates: cat.candidates.map(cand => 
+                  cand.id === candidateId ? { ...cand, votes: cand.votes + 1 } : cand
+                )
+              };
+            })
+          };
+        });
+
         return {
-          hasVoted: true,
-          candidates: updatedCandidates
+          elections: updatedElections,
+          hasVotedCategories: {
+            ...state.hasVotedCategories,
+            [electionId]: [...voted, categoryId]
+          }
         };
       }),
-      
-      toggleElection: (isActive) => set((state) => ({
-        election: { ...state.election, isActive }
+
+      createElection: (election) => set((state) => ({
+        elections: [...state.elections, { ...election, id: `e-${Date.now()}` }]
       })),
-      
-      addCandidate: (candidate) => set((state) => ({
-        candidates: [...state.candidates, { 
-          ...candidate, 
-          id: `cand-${Date.now()}`,
-          votes: 0 
-        }]
+
+      toggleElection: (id, isActive) => set((state) => ({
+        elections: state.elections.map(e => e.id === id ? { ...e, isActive } : e)
       })),
-      
-      updateCandidate: (id, updates) => set((state) => ({
-        candidates: state.candidates.map(c => c.id === id ? { ...c, ...updates } : c)
-      })),
-      
-      deleteCandidate: (id) => set((state) => ({
-        candidates: state.candidates.filter(c => c.id !== id)
-      })),
-      
-      flagSuspiciousActivity: (flag) => set((state) => ({
-        securityFlags: { ...state.securityFlags, suspiciousActivity: flag }
-      })),
-      
-      setDeviceFingerprint: (fingerprint) => set((state) => ({
-        securityFlags: { ...state.securityFlags, deviceFingerprint: fingerprint }
+
+      deleteElection: (id) => set((state) => ({
+        elections: state.elections.filter(e => e.id !== id)
       }))
     }),
-    {
-      name: 'secure-vote-storage',
-      partialize: (state) => ({ 
-        hasVoted: state.hasVoted,
-        userRole: state.userRole,
-        userEmail: state.userEmail,
-        isVerified: state.isVerified,
-        election: state.election,
-        candidates: state.candidates,
-        securityFlags: state.securityFlags
-      }),
-    }
+    { name: 'secure-vote-v2' }
   )
 );

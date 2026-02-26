@@ -1,108 +1,88 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Mail, ArrowRight, ShieldCheck, FileLock2 } from "lucide-react";
+import { ShieldCheck, Mail, ArrowRight, UserCircle, GraduationCap, Briefcase, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { useEmailLinkAuth } from "@/hooks/useFirebaseMock";
-import { useElectionStore } from "@/store/useElectionStore";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useElectionStore, Role } from "@/store/useElectionStore";
 
 export function Landing() {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
-  const { sendEmailLink, isSending, error } = useEmailLinkAuth();
-  const election = useElectionStore(state => state.election);
+  const [role, setRole] = useState<Role>("Student");
+  const [identifier, setIdentifier] = useState("");
+  const login = useElectionStore(state => state.login);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    
-    // Auto route to verification step after "sending" link
-    const success = await sendEmailLink(email, 'voter');
-    if (success) {
-      setLocation("/verification");
-    }
+    if (!email || !identifier) return;
+    login(email, role, identifier);
+    setLocation("/verification");
   };
 
+  const idLabel = role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Voter ID";
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 md:p-8 bg-gradient-to-b from-background to-muted/20">
-      
-      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-6 text-center md:text-left">
-          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <ShieldCheck className="mr-2 h-4 w-4" /> E2E Encrypted Protocol
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
-            {election.title}
-          </h1>
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
+      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <Badge className="bg-primary/10 text-primary border-primary/20">v2.0 Advanced Protocol</Badge>
+          <h1 className="text-5xl font-bold tracking-tight">Secure & Verifiable Multi-Election System</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            {election.description} Secure, verifiable, and transparent voting from any device.
+            The next generation of democratic participation. Unified voting for colleges, companies, and societies with role-based identity management.
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center md:justify-start">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <FileLock2 className="w-4 h-4 mr-2" />
-              Cryptographic Audit
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <ShieldCheck className="w-4 h-4 mr-2" />
-              Zero-Knowledge Proofs
-            </div>
+          <div className="flex gap-4">
+            <div className="flex items-center text-sm font-medium"><ShieldCheck className="w-4 h-4 mr-2 text-success" /> Biometric Identity</div>
+            <div className="flex items-center text-sm font-medium"><ShieldCheck className="w-4 h-4 mr-2 text-success" /> Multi-Election Access</div>
           </div>
         </div>
 
-        <Card className="glass shadow-xl border-border/50 animate-in fade-in slide-in-from-right-8 duration-700">
+        <Card className="glass border-border/50 shadow-2xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Access Your Ballot</CardTitle>
-            <CardDescription>
-              Enter your registered email to receive a secure login link.
-            </CardDescription>
+            <CardTitle>Voter Registration</CardTitle>
+            <CardDescription>Select your role and enter your details to access active elections.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
-                  Voter Registration Email
-                </label>
+                <label className="text-sm font-medium">Select Your Role</label>
+                <Tabs value={role || ""} onValueChange={(v) => setRole(v as Role)} className="w-full">
+                  <TabsList className="grid grid-cols-3 w-full">
+                    <TabsTrigger value="Student"><GraduationCap className="w-4 h-4 mr-1 hidden sm:block" /> Student</TabsTrigger>
+                    <TabsTrigger value="Employee"><Briefcase className="w-4 h-4 mr-1 hidden sm:block" /> Staff</TabsTrigger>
+                    <TabsTrigger value="Society Member"><Users className="w-4 h-4 mr-1 hidden sm:block" /> Society</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="citizen@example.com" 
-                    className="pl-10 h-11"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" placeholder="your@email.com" required />
                 </div>
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button 
-                type="submit" 
-                className="w-full h-11 text-base font-medium" 
-                disabled={isSending || !election.isActive}
-              >
-                {isSending ? "Sending Secure Link..." : (
-                  <>
-                    Send Login Link <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{idLabel}</label>
+                <div className="relative">
+                  <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} className="pl-10" placeholder={`Enter ${idLabel}`} required />
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full h-11" disabled={!email || !identifier}>
+                Register & Verify <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col items-center border-t border-border/40 pt-4 bg-muted/20">
-            {!election.isActive && (
-              <p className="text-sm text-destructive font-medium">
-                The election is currently inactive.
-              </p>
-            )}
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              By continuing, you agree to our terms of service and identity verification requirements.
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>
   );
+}
+
+function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>{children}</span>;
 }

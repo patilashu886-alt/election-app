@@ -6,19 +6,43 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useElectionStore, Role } from "@/store/useElectionStore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { createUser } from "@/lib/firestore-users";
+import { useToast } from "@/hooks/use-toast";
 
 export function Landing() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("Student");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [identifier, setIdentifier] = useState("");
   const login = useElectionStore(state => state.login);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !identifier) return;
-    login(email, role, identifier);
-    setLocation("/verification");
+    if (!email || !identifier || !password || !name || !role) return;
+    try {
+      // Create Firebase Auth user
+      await createUserWithEmailAndPassword(auth, email, password);
+
+      // Create user document in Firestore
+      await createUser({
+        name,
+        email,
+        role: role as string,
+        identifier,
+      });
+
+      toast({ title: "Account created", description: "Account created successfully. Proceed to verification." });
+      login(email, role, identifier);
+      setLocation("/verification");
+    } catch (err: any) {
+      const message = err?.message || "Failed to create account";
+      toast({ title: "Signup error", description: message });
+    }
   };
 
   const idLabel = role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Society ID";
@@ -65,6 +89,22 @@ export function Landing() {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Password</label>
+                <div className="relative">
+                  <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" placeholder="Create a password" required />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Full Name</label>
+                <div className="relative">
+                  <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} className="pl-10" placeholder={`Your full name`} required />
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-sm font-medium">{idLabel}</label>
                 <div className="relative">
                   <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -72,7 +112,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full h-11" disabled={!email || !identifier}>
+              <Button type="submit" className="w-full h-11" disabled={!email || !identifier || !password || !name}>
                 Register & Verify <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>

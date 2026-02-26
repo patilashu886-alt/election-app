@@ -1,5 +1,5 @@
 import { useRoute, useLocation, Link } from "wouter";
-import { useElectionStore } from "@/store/useElectionStore";
+import { useElectionStore, getRoleElectionType } from "@/store/useElectionStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,27 @@ export function CategorySelection() {
   const [, setLocation] = useLocation();
   const elections = useElectionStore(state => state.elections);
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
+  const session = useElectionStore(state => state.session);
   
   const election = elections.find(e => e.id === params?.id);
   if (!election) return <div>Election not found</div>;
+
+  const allowedType = getRoleElectionType(session.role);
+  if (!election.isActive || !allowedType || election.type !== allowedType) {
+    return (
+      <div className="container py-10">
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle>Election Unavailable</CardTitle>
+            <CardDescription>This election is inactive or not available for your role.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   const votedCategories = hasVotedCategories[election.id] || [];
 

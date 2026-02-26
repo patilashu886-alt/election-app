@@ -1,5 +1,5 @@
 import { useRoute, useLocation } from "wouter";
-import { useElectionStore, Candidate } from "@/store/useElectionStore";
+import { useElectionStore, Candidate, getRoleElectionType } from "@/store/useElectionStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,8 @@ export function CandidateDetail() {
   const [, setLocation] = useLocation();
   const elections = useElectionStore(state => state.elections);
   const submitVote = useElectionStore(state => state.submitVote);
+  const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
+  const session = useElectionStore(state => state.session);
   
   const election = elections.find(e => e.id === params?.eid);
   const category = election?.categories.find(c => c.id === params?.cid);
@@ -19,6 +21,41 @@ export function CandidateDetail() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   if (!election || !category) return <div>Not found</div>;
+
+  const allowedType = getRoleElectionType(session.role);
+  const hasAlreadyVoted = (hasVotedCategories[election.id] || []).includes(category.id);
+
+  if (!election.isActive || !allowedType || election.type !== allowedType) {
+    return (
+      <div className="container py-10">
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle>Election Unavailable</CardTitle>
+            <CardDescription>This election is inactive or not available for your role.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  if (hasAlreadyVoted) {
+    return (
+      <div className="container py-10">
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle>Vote Already Cast</CardTitle>
+            <CardDescription>You have already submitted your vote in this category.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button onClick={() => setLocation(`/election/${election.id}`)}>Back to Categories</Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   const handleVote = async () => {
     if (!selectedCandidate) return;

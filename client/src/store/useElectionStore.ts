@@ -1,9 +1,27 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Role = 'Student' | 'Employee' | 'Society Member' | 'admin' | null;
+export type Role = 'Student' | 'Employee' | 'Society' | 'admin' | null;
 export type ElectionType = 'college' | 'company' | 'society';
 export type VerificationStep = 'idle' | 'email_sent' | 'email_verified' | 'camera_pending' | 'camera_verified';
+
+export const getRoleElectionType = (role: Role): ElectionType | null => {
+  if (role === 'Student') return 'college';
+  if (role === 'Employee') return 'company';
+  if (role === 'Society') return 'society';
+  return null;
+};
+
+const normalizeRole = (role: Role | string): Role => {
+  if (role === 'Society Member') return 'Society';
+  if (role === 'Student' || role === 'Employee' || role === 'Society' || role === 'admin') return role;
+  return null;
+};
+
+const getSessionKey = (email: string | null, identifier: string | null) => {
+  if (!email && !identifier) return null;
+  return `${email || 'anonymous'}::${identifier || 'no-id'}`;
+};
 
 export interface Category {
   id: string;
@@ -46,7 +64,8 @@ interface ElectionStore {
   session: UserSession;
   
   // Voter Progress
-  hasVotedCategories: Record<string, string[]>; // electionId -> categoryIds[]
+  hasVotedCategories: Record<string, string[]>; // electionId -> categoryIds[] for current session
+  votesByUser: Record<string, Record<string, string[]>>; // sessionKey -> electionId -> categoryIds[]
   verificationStep: VerificationStep;
   isVerified: boolean;
   identityPhotoUrl: string | null;
@@ -125,18 +144,30 @@ export const useElectionStore = create<ElectionStore>()(
     (set) => ({
       session: { email: null, role: null, identifier: null },
       hasVotedCategories: {},
+      votesByUser: {},
       verificationStep: 'idle',
       isVerified: false,
       identityPhotoUrl: null,
       elections: INITIAL_ELECTIONS,
 
-      login: (email, role, identifier) => set({ 
-        session: { email, role, identifier: identifier || null },
-        verificationStep: role !== 'admin' ? 'email_sent' : 'idle'
+      login: (email, role, identifier) => set((state) => {
+        const normalizedRole = normalizeRole(role);
+        const sessionIdentifier = identifier || null;
+        const sessionKey = getSessionKey(email, sessionIdentifier);
+        const previousVotes = sessionKey ? state.votesByUser[sessionKey] || {} : {};
+
+        return {
+          session: { email, role: normalizedRole, identifier: sessionIdentifier },
+          hasVotedCategories: previousVotes,
+          verificationStep: normalizedRole !== 'admin' ? 'email_sent' : 'idle',
+          isVerified: normalizedRole === 'admin',
+          identityPhotoUrl: null
+        };
       }),
 
       logout: () => set({ 
         session: { email: null, role: null, identifier: null },
+        hasVotedCategories: {},
         verificationStep: 'idle',
         isVerified: false,
         identityPhotoUrl: null
@@ -150,8 +181,21 @@ export const useElectionStore = create<ElectionStore>()(
       setIdentityPhoto: (url) => set({ identityPhotoUrl: url }),
 
       submitVote: (electionId, categoryId, candidateId) => set((state) => {
+        if (!state.session.email || state.session.role === 'admin' || !state.isVerified) {
+          return state;
+        }
+
+        const allowedType = getRoleElectionType(state.session.role);
+        const targetElection = state.elections.find(e => e.id === electionId);
+        if (!targetElection || !targetElection.isActive || !allowedType || targetElection.type !== allowedType) {
+          return state;
+        }
+
         const voted = state.hasVotedCategories[electionId] || [];
         if (voted.includes(categoryId)) return state;
+
+        const categoryExists = targetElection.categories.some(cat => cat.id === categoryId && cat.candidates.some(cand => cand.id === candidateId));
+        if (!categoryExists) return state;
 
         const updatedElections = state.elections.map(e => {
           if (e.id !== electionId) return e;
@@ -169,12 +213,23 @@ export const useElectionStore = create<ElectionStore>()(
           };
         });
 
+        const sessionKey = getSessionKey(state.session.email, state.session.identifier);
+        const updatedHasVotedCategories = {
+          ...state.hasVotedCategories,
+          [electionId]: [...voted, categoryId]
+        };
+
+        const updatedVotesByUser = sessionKey
+          ? {
+              ...state.votesByUser,
+              [sessionKey]: updatedHasVotedCategories
+            }
+          : state.votesByUser;
+
         return {
           elections: updatedElections,
-          hasVotedCategories: {
-            ...state.hasVotedCategories,
-            [electionId]: [...voted, categoryId]
-          }
+          hasVotedCategories: updatedHasVotedCategories,
+          votesByUser: updatedVotesByUser
         };
       }),
 

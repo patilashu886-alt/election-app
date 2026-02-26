@@ -21,7 +21,7 @@ export function Landing() {
     setLocation("/verification");
   };
 
-  const idLabel = role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Voter ID";
+  const idLabel = role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Society ID";
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
@@ -51,7 +51,7 @@ export function Landing() {
                   <TabsList className="grid grid-cols-3 w-full">
                     <TabsTrigger value="Student"><GraduationCap className="w-4 h-4 mr-1 hidden sm:block" /> Student</TabsTrigger>
                     <TabsTrigger value="Employee"><Briefcase className="w-4 h-4 mr-1 hidden sm:block" /> Staff</TabsTrigger>
-                    <TabsTrigger value="Society Member"><Users className="w-4 h-4 mr-1 hidden sm:block" /> Society</TabsTrigger>
+                    <TabsTrigger value="Society"><Users className="w-4 h-4 mr-1 hidden sm:block" /> Society</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>

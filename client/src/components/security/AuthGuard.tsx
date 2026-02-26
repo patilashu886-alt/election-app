@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { useElectionStore, Role } from "@/store/useElectionStore";
-import { ShieldAlert } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useElectionStore } from "@/store/useElectionStore";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -19,20 +16,30 @@ export function AuthGuard({ children, requireRole, requireActiveElection = false
   useEffect(() => {
     if (!session.email) {
       setLocation("/");
-    } else if (requireRole === 'admin' && session.role !== 'admin') {
-      setLocation("/dashboard");
-    } else if (requireRole === 'voter' && session.role === 'admin') {
-      setLocation("/admin");
+      return;
     }
-  }, [session, requireRole, setLocation]);
+
+    if (requireRole === 'admin' && session.role !== 'admin') {
+      setLocation("/dashboard");
+      return;
+    }
+
+    if (requireRole === 'voter' && session.role === 'admin') {
+      setLocation("/admin");
+      return;
+    }
+
+    if (requireRole === 'voter' && session.role !== 'admin' && !isVerified && location !== '/verification') {
+      setLocation('/verification');
+      return;
+    }
+
+    if (requireRole === 'voter' && session.role !== 'admin' && isVerified && location === '/verification') {
+      setLocation('/dashboard');
+    }
+  }, [session, isVerified, location, requireRole, setLocation]);
 
   if (!session.email) return null;
-
-  // If voter needs to be verified
-  if (session.role !== 'admin' && !isVerified && location !== '/verification') {
-     setLocation('/verification');
-     return null;
-  }
 
   return <>{children}</>;
 }

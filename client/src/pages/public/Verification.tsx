@@ -7,27 +7,28 @@ import { MailCheck, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Verification() {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const step = useElectionStore(state => state.verificationStep);
   const setVerificationStep = useElectionStore(state => state.setVerificationStep);
-  const user = useElectionStore(state => state.userEmail);
+  const userEmail = useElectionStore(state => state.session.email);
 
   useEffect(() => {
-    if (!user) {
+    if (!userEmail) {
       setLocation("/");
     }
     // If they already verified, skip this page
     if (step === 'camera_verified') {
-      setLocation("/voting");
+      setLocation("/dashboard");
     }
-  }, [user, step, setLocation]);
+  }, [userEmail, step, setLocation]);
 
   const handleEmailVerifiedMock = () => {
+    setVerificationStep('email_verified');
     setVerificationStep('camera_pending');
   };
 
   const handleCameraVerified = () => {
-    setLocation("/voting");
+    setLocation("/dashboard");
   };
 
   return (
@@ -58,7 +59,7 @@ export function Verification() {
               <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <MailCheck className="w-5 h-5 text-primary" />
                 <div className="text-sm">
-                  We've sent a magic link to <span className="font-semibold">{user}</span>. 
+                  We've sent a magic link to <span className="font-semibold">{userEmail}</span>. 
                   (Click below to simulate clicking the link in your email).
                 </div>
               </div>

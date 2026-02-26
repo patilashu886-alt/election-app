@@ -11,13 +11,15 @@ export function VoterDashboard() {
   const elections = useElectionStore(state => state.elections);
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
 
-  // Eligibility logic: Students can see 'college', Employees 'company', Society Members 'society'
+  // Eligibility logic: Students can see 'college', Employees 'company', Society users 'society'
   const isEligible = (type: ElectionType) => {
     if (session.role === 'Student' && type === 'college') return true;
     if (session.role === 'Employee' && type === 'company') return true;
-    if (session.role === 'Society Member' && type === 'society') return true;
+    if (session.role === 'Society' && type === 'society') return true;
     return false;
   };
+
+  const eligibleActiveElections = elections.filter((election) => election.isActive && isEligible(election.type));
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -51,17 +53,24 @@ export function VoterDashboard() {
         </div>
       </div>
 
+      {eligibleActiveElections.length === 0 ? (
+        <Card className="glass border-dashed">
+          <CardHeader>
+            <CardTitle>No Eligible Active Elections</CardTitle>
+            <CardDescription>There are no live elections available for your role right now.</CardDescription>
+          </CardHeader>
+        </Card>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {elections.map((election) => {
-          const eligible = isEligible(election.type);
+        {eligibleActiveElections.map((election) => {
           const votedCount = hasVotedCategories[election.id]?.length || 0;
           const totalCategories = election.categories.length;
 
           return (
-            <Card key={election.id} className={`glass overflow-hidden flex flex-col transition-all duration-300 ${!eligible ? 'opacity-60 grayscale' : 'hover:shadow-xl'}`}>
+            <Card key={election.id} className="glass overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl">
               <CardHeader className="relative">
                 <div className="flex justify-between items-start mb-2">
-                  <Badge variant={eligible ? "default" : "outline"} className="capitalize">
+                  <Badge variant="default" className="capitalize">
                     {election.type}
                   </Badge>
                   {votedCount === totalCategories ? (
@@ -90,20 +99,15 @@ export function VoterDashboard() {
                 </div>
               </CardContent>
               <CardFooter className="pt-4 border-t border-border/40">
-                {!eligible ? (
-                  <Button disabled className="w-full">
-                    <Lock className="w-4 h-4 mr-2" /> Ineligible Role
-                  </Button>
-                ) : (
-                  <Button onClick={() => setLocation(`/election/${election.id}`)} className="w-full">
-                    Enter Election <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
+                <Button onClick={() => setLocation(`/election/${election.id}`)} className="w-full">
+                  Enter Election <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </CardFooter>
             </Card>
           );
         })}
       </div>
+      )}
     </div>
   );
 }

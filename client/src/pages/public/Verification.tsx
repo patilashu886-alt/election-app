@@ -1,31 +1,87 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useElectionStore } from "@/store/useElectionStore";
 import { CameraVerification } from "@/components/security/CameraVerification";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MailCheck, CheckCircle2, AlertCircle } from "lucide-react";
+import { MailCheck, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { sendEmailVerification, isEmailVerified } from "@/lib/firebase-auth-helpers";
+import { useToast } from "@/hooks/use-toast";
 
 export function Verification() {
   const [, setLocation] = useLocation();
   const step = useElectionStore(state => state.verificationStep);
   const setVerificationStep = useElectionStore(state => state.setVerificationStep);
   const userEmail = useElectionStore(state => state.session.email);
+  const { toast } = useToast();
 
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isCheckingVerification, setIsCheckingVerification] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  // Send email verification when user first arrives at email step
   useEffect(() => {
     if (!userEmail) {
       setLocation("/");
+      return;
     }
-    // If they already verified, skip this page
+
+    if (step === 'email_sent' && !emailSent && !isSendingEmail) {
+      sendVerificationEmail();
+    }
+  }, [step, userEmail, emailSent, isSendingEmail]);
+
+  // Check if user has verified their email (poll every 3 seconds)
+  useEffect(() => {
+    if (step !== 'email_sent') return;
+
+    let checkInterval: NodeJS.Timeout;
+    
+    const checkVerification = async () => {
+      try {
+        const verified = await isEmailVerified();
+        if (verified) {
+          setVerificationStep('email_verified');
+          setVerificationStep('camera_pending');
+          toast({ title: "Email verified!", description: "Your email has been confirmed." });
+        }
+      } catch (err) {
+        console.error('Error checking email verification:', err);
+      }
+    };
+
+    checkInterval = setInterval(checkVerification, 3000);
+
+    return () => clearInterval(checkInterval);
+  }, [step, setVerificationStep, toast]);
+
+  const sendVerificationEmail = async () => {
+    setIsSendingEmail(true);
+    setLastError(null);
+    try {
+      await sendEmailVerification();
+      setEmailSent(true);
+      toast({ 
+        title: "Verification email sent", 
+        description: `Check ${userEmail} and click the verification link to continue.` 
+      });
+    } catch (err: any) {
+      const message = err?.message || "Failed to send verification email";
+      setLastError(message);
+      toast({ title: "Error", description: message });
+      console.error('Email verification error:', err);
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
+  // If they already verified, skip this page
+  useEffect(() => {
     if (step === 'camera_verified') {
       setLocation("/dashboard");
     }
-  }, [userEmail, step, setLocation]);
-
-  const handleEmailVerifiedMock = () => {
-    setVerificationStep('email_verified');
-    setVerificationStep('camera_pending');
-  };
+  }, [step, setLocation]);
 
   const handleCameraVerified = () => {
     setLocation("/dashboard");
@@ -59,12 +115,44 @@ export function Verification() {
               <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <MailCheck className="w-5 h-5 text-primary" />
                 <div className="text-sm">
-                  We've sent a magic link to <span className="font-semibold">{userEmail}</span>. 
-                  (Click below to simulate clicking the link in your email).
+                  A verification link has been sent to <span className="font-semibold">{userEmail}</span>. 
+                  Click the link in your email to verify your account.
                 </div>
               </div>
-              <Button onClick={handleEmailVerifiedMock} className="w-full">
-                [Mock] Click Email Link
+
+              {lastError && (
+                <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <AlertCircle className="w-5 h-5 text-destructive" />
+                  <div className="text-sm text-destructive">{lastError}</div>
+                </div>
+              )}
+              
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-3">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Waiting for email verification...
+              </div>
+
+              <div className="text-xs text-muted-foreground space-y-1 p-2 bg-muted/30 rounded">
+                <p>💡 <strong>Tips:</strong></p>
+                <p>• Check your spam/junk folder</p>
+                <p>• Verification may take a few seconds</p>
+                <p>• Click "Resend Email" if you don't see it</p>
+              </div>
+
+              <Button 
+                onClick={sendVerificationEmail} 
+                variant="outline" 
+                className="w-full"
+                disabled={isSendingEmail}
+              >
+                {isSendingEmail ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Resend Email"
+                )}
               </Button>
             </CardContent>
           )}

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, Info, ArrowRight, ShieldCheck, Lock } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 export function CandidateDetail() {
   const [, params] = useRoute("/election/:eid/category/:cid");
@@ -14,11 +15,13 @@ export function CandidateDetail() {
   const submitVote = useElectionStore(state => state.submitVote);
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
   const session = useElectionStore(state => state.session);
+  const { toast } = useToast();
   
   const election = elections.find(e => e.id === params?.eid);
   const category = election?.categories.find(c => c.id === params?.cid);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!election || !category) return <div>Not found</div>;
 
@@ -59,9 +62,18 @@ export function CandidateDetail() {
 
   const handleVote = async () => {
     if (!selectedCandidate) return;
-    submitVote(election.id, category.id, selectedCandidate.id);
-    setShowConfirm(false);
-    setLocation(`/election/${election.id}`);
+    
+    setIsSubmitting(true);
+    try {
+      await submitVote(election.id, category.id, selectedCandidate.id);
+      toast({ title: "Vote submitted", description: `Your vote for ${selectedCandidate.name} has been recorded.` });
+      setShowConfirm(false);
+      setLocation(`/election/${election.id}`);
+    } catch (err: any) {
+      toast({ title: "Vote failed", description: err.message || "Could not submit your vote." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,8 +146,8 @@ export function CandidateDetail() {
              </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirm(false)}>Cancel</Button>
-            <Button onClick={handleVote}>Confirm Secure Vote</Button>
+            <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button onClick={handleVote} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Confirm Secure Vote"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

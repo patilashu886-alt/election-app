@@ -1,5 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  Unsubscribe,
+  getDoc,
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export type Role = 'Student' | 'Employee' | 'Society' | 'admin' | null;
 export type ElectionType = 'college' | 'company' | 'society';
@@ -51,105 +63,88 @@ export interface Election {
   categories: Category[];
   startTime: string;
   endTime: string;
+  // optional – added by firestore
+  createdAt?: string;
 }
 
 interface UserSession {
   email: string | null;
   role: Role;
-  identifier: string | null; // Student ID, Employee ID, etc.
+  identifier: string | null;
 }
 
 interface ElectionStore {
   // Session State
   session: UserSession;
-  
-  // Voter Progress
-  hasVotedCategories: Record<string, string[]>; // electionId -> categoryIds[] for current session
-  votesByUser: Record<string, Record<string, string[]>>; // sessionKey -> electionId -> categoryIds[]
+
+  // Voter Progress (local only for now)
+  hasVotedCategories: Record<string, string[]>;
+  votesByUser: Record<string, Record<string, string[]>>;
   verificationStep: VerificationStep;
   isVerified: boolean;
   identityPhotoUrl: string | null;
-  
-  // Elections Data
+
+  // Elections – now real-time from Firestore
   elections: Election[];
-  
+  unsubscribe: Unsubscribe | null;
+
   // Actions
+  initializeElections: () => void;
+  cleanupElections: () => void;
+
   login: (email: string, role: Role, identifier?: string) => void;
   logout: () => void;
   setVerificationStep: (step: VerificationStep) => void;
   setIdentityPhoto: (url: string) => void;
   submitVote: (electionId: string, categoryId: string, candidateId: string) => void;
-  
-  // Admin Actions
-  createElection: (election: Omit<Election, 'id'>) => void;
-  toggleElection: (id: string, isActive: boolean) => void;
-  deleteElection: (id: string) => void;
+
+  // Admin Actions → Firestore
+  createElection: (election: Omit<Election, 'id'>) => Promise<void>;
+  toggleElection: (id: string, isActive: boolean) => Promise<void>;
+  deleteElection: (id: string) => Promise<void>;
 }
-
-const MOCK_CANDIDATES: Candidate[] = [
-  {
-    id: 'c1',
-    name: 'Sarah Chen',
-    party: 'Innovation Party',
-    description: 'Leading with technology and transparency.',
-    manifesto: 'I believe in a digital-first approach to governance where every citizen has a voice through secure platforms.',
-    advantages: ['Tech background', 'Youthful energy', 'Strong communicator'],
-    disadvantages: ['Limited political experience'],
-    votes: 45,
-    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
-  },
-  {
-    id: 'c2',
-    name: 'James Wilson',
-    party: 'Heritage Group',
-    description: 'Stability and proven leadership.',
-    manifesto: 'Experience matters. I will ensure our traditions are preserved while making sensible improvements.',
-    advantages: ['20 years experience', 'Proven track record'],
-    disadvantages: ['Slow to adapt to new tech'],
-    votes: 38,
-    imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James'
-  }
-];
-
-const INITIAL_ELECTIONS: Election[] = [
-  {
-    id: 'e1',
-    title: 'University Student Council 2026',
-    description: 'Annual election for student representatives.',
-    type: 'college',
-    isActive: true,
-    startTime: new Date().toISOString(),
-    endTime: new Date(Date.now() + 86400000).toISOString(),
-    categories: [
-      { id: 'cat1', name: 'President', description: 'Head of the student body', candidates: MOCK_CANDIDATES },
-      { id: 'cat2', name: 'Treasurer', description: 'Financial oversight', candidates: MOCK_CANDIDATES }
-    ]
-  },
-  {
-    id: 'e2',
-    title: 'Corporate Board Election',
-    description: 'Selection of employee representatives for the board.',
-    type: 'company',
-    isActive: true,
-    startTime: new Date().toISOString(),
-    endTime: new Date(Date.now() + 86400000).toISOString(),
-    categories: [
-      { id: 'cat3', name: 'Technical Rep', description: 'Represents engineering', candidates: MOCK_CANDIDATES }
-    ]
-  }
-];
 
 export const useElectionStore = create<ElectionStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       session: { email: null, role: null, identifier: null },
       hasVotedCategories: {},
       votesByUser: {},
       verificationStep: 'idle',
       isVerified: false,
       identityPhotoUrl: null,
-      elections: INITIAL_ELECTIONS,
+      elections: [],
+      unsubscribe: null,
 
+      // ── Firestore real-time ────────────────────────────────────────
+      initializeElections: () => {
+        const { unsubscribe } = get();
+        if (unsubscribe) return;
+
+        const q = query(collection(db, 'elections'), orderBy('startTime', 'desc'));
+
+        const unsub = onSnapshot(q, (snapshot) => {
+          const list = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Election[];
+          set({ elections: list });
+        }, (err) => {
+          console.error('Elections listener error:', err);
+        });
+
+        set({ unsubscribe: unsub });
+      },
+
+      cleanupElections: () => {
+        const { unsubscribe } = get();
+        if (unsubscribe) {
+          unsubscribe();
+          set({ unsubscribe: null });
+        }
+      },
+
+      // ── Auth / Session ─────────────────────────────────────────────
       login: (email, role, identifier) => set((state) => {
         const normalizedRole = normalizeRole(role);
         const sessionIdentifier = identifier || null;
@@ -165,7 +160,7 @@ export const useElectionStore = create<ElectionStore>()(
         };
       }),
 
-      logout: () => set({ 
+      logout: () => set({
         session: { email: null, role: null, identifier: null },
         hasVotedCategories: {},
         verificationStep: 'idle',
@@ -173,78 +168,124 @@ export const useElectionStore = create<ElectionStore>()(
         identityPhotoUrl: null
       }),
 
-      setVerificationStep: (step) => set((state) => ({
+      setVerificationStep: (step) => set({
         verificationStep: step,
         isVerified: step === 'camera_verified'
-      })),
+      }),
 
       setIdentityPhoto: (url) => set({ identityPhotoUrl: url }),
 
-      submitVote: (electionId, categoryId, candidateId) => set((state) => {
+      // ── Voting (now persisted to Firestore) ───────────────────────────
+      submitVote: async (electionId, categoryId, candidateId) => {
+        const state = get();
+
         if (!state.session.email || state.session.role === 'admin' || !state.isVerified) {
-          return state;
+          throw new Error('User not eligible to vote');
         }
 
         const allowedType = getRoleElectionType(state.session.role);
         const targetElection = state.elections.find(e => e.id === electionId);
+        
         if (!targetElection || !targetElection.isActive || !allowedType || targetElection.type !== allowedType) {
-          return state;
+          throw new Error('Election not active or invalid role');
         }
 
         const voted = state.hasVotedCategories[electionId] || [];
-        if (voted.includes(categoryId)) return state;
+        if (voted.includes(categoryId)) {
+          throw new Error('Already voted in this category');
+        }
 
-        const categoryExists = targetElection.categories.some(cat => cat.id === categoryId && cat.candidates.some(cand => cand.id === candidateId));
-        if (!categoryExists) return state;
+        const category = targetElection.categories.find(cat => cat.id === categoryId);
+        const candidate = category?.candidates.find(cand => cand.id === candidateId);
+        
+        if (!category || !candidate) {
+          throw new Error('Category or candidate not found');
+        }
 
-        const updatedElections = state.elections.map(e => {
-          if (e.id !== electionId) return e;
-          return {
-            ...e,
-            categories: e.categories.map(cat => {
-              if (cat.id !== categoryId) return cat;
-              return {
-                ...cat,
-                candidates: cat.candidates.map(cand => 
-                  cand.id === candidateId ? { ...cand, votes: cand.votes + 1 } : cand
-                )
-              };
-            })
-          };
-        });
+        try {
+          // Update vote count in Firestore
+          const electionRef = doc(db, 'elections', electionId);
+          
+          // Increment the candidate's vote count
+          const updatedCategories = targetElection.categories.map(cat => {
+            if (cat.id !== categoryId) return cat;
+            return {
+              ...cat,
+              candidates: cat.candidates.map(cand =>
+                cand.id === candidateId ? { ...cand, votes: cand.votes + 1 } : cand
+              )
+            };
+          });
 
-        const sessionKey = getSessionKey(state.session.email, state.session.identifier);
-        const updatedHasVotedCategories = {
-          ...state.hasVotedCategories,
-          [electionId]: [...voted, categoryId]
-        };
+          await updateDoc(electionRef, {
+            categories: updatedCategories
+          });
 
-        const updatedVotesByUser = sessionKey
-          ? {
-              ...state.votesByUser,
-              [sessionKey]: updatedHasVotedCategories
-            }
-          : state.votesByUser;
+          // Update local state
+          set((state) => {
+            const sessionKey = getSessionKey(state.session.email, state.session.identifier);
+            const updatedHasVoted = {
+              ...state.hasVotedCategories,
+              [electionId]: [...voted, categoryId]
+            };
 
-        return {
-          elections: updatedElections,
-          hasVotedCategories: updatedHasVotedCategories,
-          votesByUser: updatedVotesByUser
-        };
-      }),
+            const updatedVotesByUser = sessionKey
+              ? { ...state.votesByUser, [sessionKey]: updatedHasVoted }
+              : state.votesByUser;
 
-      createElection: (election) => set((state) => ({
-        elections: [...state.elections, { ...election, id: `e-${Date.now()}` }]
-      })),
+            return {
+              hasVotedCategories: updatedHasVoted,
+              votesByUser: updatedVotesByUser
+            };
+          });
+        } catch (err) {
+          console.error('Vote submission failed:', err);
+          throw err;
+        }
+      },
 
-      toggleElection: (id, isActive) => set((state) => ({
-        elections: state.elections.map(e => e.id === id ? { ...e, isActive } : e)
-      })),
+      // ── Admin actions → Firestore ──────────────────────────────────
+      createElection: async (election) => {
+        try {
+          await addDoc(collection(db, 'elections'), {
+            ...election,
+            createdAt: new Date().toISOString()
+          });
+          // listener will update elections automatically
+        } catch (err) {
+          console.error('Create election failed:', err);
+          throw err;
+        }
+      },
 
-      deleteElection: (id) => set((state) => ({
-        elections: state.elections.filter(e => e.id !== id)
-      }))
+      toggleElection: async (id, isActive) => {
+        try {
+          const ref = doc(db, 'elections', id);
+          await updateDoc(ref, { isActive });
+          // listener updates UI
+        } catch (err) {
+          console.error('Toggle failed:', err);
+          throw err;
+        }
+      },
+
+      deleteElection: async (id) => {
+        // Note: delete not implemented in your UI yet
+        // If you add delete button later, implement here with deleteDoc()
+        console.warn('Delete not implemented yet');
+      }
     }),
-    { name: 'secure-vote-v2' }
+    {
+      name: 'secure-vote-v2',
+      // only persist non-Firestore parts
+      partialize: (state) => ({
+        session: state.session,
+        hasVotedCategories: state.hasVotedCategories,
+        votesByUser: state.votesByUser,
+        verificationStep: state.verificationStep,
+        isVerified: state.isVerified,
+        identityPhotoUrl: state.identityPhotoUrl
+      })
+    }
   )
 );

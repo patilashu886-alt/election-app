@@ -1,12 +1,14 @@
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { useElectionStore, ElectionType } from "@/store/useElectionStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Briefcase, Users, ArrowRight, CheckCircle2, Lock } from "lucide-react";
+import { GraduationCap, Briefcase, Users, ArrowRight, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function VoterDashboard() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const session = useElectionStore(state => state.session);
   const elections = useElectionStore(state => state.elections);
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
@@ -40,16 +42,16 @@ export function VoterDashboard() {
             </Badge>
             <Badge variant="secondary" className="font-mono">{session.identifier}</Badge>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Voter Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back. View active elections and cast your vote.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("voterDashboard.title")}</h1>
+          <p className="text-muted-foreground">{t("voterDashboard.welcome")}</p>
         </div>
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-3 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Identity Status</div>
-            <div className="text-sm font-bold text-primary">Verified Account</div>
+            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t("voterDashboard.identityStatus")}</div>
+            <div className="text-sm font-bold text-primary">{t("voterDashboard.verifiedAccount")}</div>
           </div>
         </div>
       </div>
@@ -57,8 +59,8 @@ export function VoterDashboard() {
       {eligibleActiveElections.length === 0 ? (
         <Card className="section-card border-dashed">
           <CardHeader>
-            <CardTitle>No Eligible Active Elections</CardTitle>
-            <CardDescription>There are no live elections available for your role right now.</CardDescription>
+            <CardTitle>{t("voterDashboard.noElectionsTitle")}</CardTitle>
+            <CardDescription>{t("voterDashboard.noElectionsDesc")}</CardDescription>
           </CardHeader>
         </Card>
       ) : (
@@ -75,11 +77,11 @@ export function VoterDashboard() {
                     {election.type}
                   </Badge>
                   {votedCount === totalCategories ? (
-                    <Badge variant="success" className="bg-success/10 text-success border-success/20">Completed</Badge>
+                    <Badge variant="success" className="bg-success/10 text-success border-success/20">{t("voterDashboard.completed")}</Badge>
                   ) : votedCount > 0 ? (
-                    <Badge variant="warning">In Progress</Badge>
+                    <Badge variant="warning">{t("voterDashboard.inProgress")}</Badge>
                   ) : (
-                    <Badge variant="secondary">Not Started</Badge>
+                    <Badge variant="secondary">{t("voterDashboard.notStarted")}</Badge>
                   )}
                 </div>
                 <CardTitle className="text-xl">{election.title}</CardTitle>
@@ -88,8 +90,8 @@ export function VoterDashboard() {
               <CardContent className="flex-1">
                 <div className="space-y-3">
                   <div className="flex justify-between text-xs font-medium">
-                    <span>Voting Progress</span>
-                    <span>{votedCount}/{totalCategories} Categories</span>
+                    <span>{t("voterDashboard.votingProgress")}</span>
+                    <span>{t("voterDashboard.categoriesCount", { voted: votedCount, total: totalCategories })}</span>
                   </div>
                   <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                     <div 
@@ -101,7 +103,7 @@ export function VoterDashboard() {
               </CardContent>
               <CardFooter className="pt-4 border-t border-border/40">
                 <Button onClick={() => setLocation(`/election/${election.id}`)} className="w-full">
-                  Enter Election <ArrowRight className="w-4 h-4 ml-2" />
+                  {t("voterDashboard.enterElection")} <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </CardFooter>
             </Card>

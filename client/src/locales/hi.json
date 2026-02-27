@@ -1,0 +1,268 @@
+{
+  "common": {
+    "appName": "SecureVote",
+    "language": "भाषा",
+    "languages": {
+      "en": "अंग्रेज़ी",
+      "mr": "मराठी",
+      "hi": "हिंदी"
+    },
+    "actions": {
+      "cancel": "रद्द करें",
+      "submit": "सबमिट",
+      "back": "वापस",
+      "logout": "साइन आउट",
+      "dashboard": "डैशबोर्ड",
+      "candidate": "उम्मीदवार",
+      "admin": "एडमिन"
+    },
+    "status": {
+      "pending": "लंबित",
+      "approved": "स्वीकृत",
+      "rejected": "अस्वीकृत",
+      "sending": "भेजा जा रहा है...",
+      "submitting": "सबमिट हो रहा है...",
+      "loggingIn": "लॉगिन हो रहा है...",
+      "signingIn": "साइन इन हो रहा है..."
+    }
+  },
+  "navbar": {
+    "portal": "इलेक्शन पोर्टल",
+    "adminLogin": "एडमिन लॉगिन"
+  },
+  "notFound": {
+    "title": "404 पेज नहीं मिला",
+    "description": "क्या आप इस पेज को राउटर में जोड़ना भूल गए?"
+  },
+  "landing": {
+    "badge": "v2.0 एडवांस प्रोटोकॉल",
+    "heroTitle": "सुरक्षित और सत्यापित मल्टी-इलेक्शन सिस्टम",
+    "heroDescription": "लोकतांत्रिक भागीदारी की अगली पीढ़ी। कॉलेज, कंपनी और सोसायटी के लिए रोल-आधारित पहचान प्रबंधन के साथ एकीकृत मतदान।",
+    "featureBiometric": "बायोमेट्रिक पहचान",
+    "featureMultiAccess": "मल्टी-इलेक्शन एक्सेस",
+    "registerTitle": "यूज़र रजिस्ट्रेशन",
+    "registerDescription": "इलेक्शन फीचर्स के लिए अपनी भूमिका चुनें और विवरण भरें।",
+    "selectRole": "अपनी भूमिका चुनें",
+    "roles": {
+      "student": "छात्र",
+      "staff": "स्टाफ",
+      "society": "सोसायटी",
+      "candidate": "उम्मीदवार"
+    },
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "fullName": "पूरा नाम",
+    "studentId": "स्टूडेंट आईडी",
+    "employeeId": "एम्प्लॉयी आईडी",
+    "societyId": "सोसायटी आईडी",
+    "candidateId": "कैंडिडेट आईडी",
+    "placeholders": {
+      "email": "your@email.com",
+      "password": "एक पासवर्ड बनाएं",
+      "fullName": "आपका पूरा नाम",
+      "enter": "{{label}} दर्ज करें"
+    },
+    "registerVerify": "रजिस्टर करें और सत्यापित करें",
+    "registerContinue": "रजिस्टर करें और आगे बढ़ें",
+    "alreadyAccount": "पहले से खाता है?",
+    "login": "लॉगिन",
+    "loginModalTitle": "अपने खाते में लॉगिन करें",
+    "dontHaveAccount": "खाता नहीं है?",
+    "signup": "साइन अप",
+    "loginButton": "लॉगिन",
+    "toasts": {
+      "accountCreatedTitle": "खाता बन गया",
+      "accountCreatedCandidate": "खाता सफलतापूर्वक बन गया। कैंडिडेट डैशबोर्ड पर जाएं।",
+      "accountCreatedVoter": "खाता सफलतापूर्वक बन गया। सत्यापन पर आगे बढ़ें।",
+      "signupErrorTitle": "साइनअप त्रुटि",
+      "signupErrorFallback": "खाता बनाने में विफल",
+      "noProfile": "इस खाते के लिए प्रोफाइल नहीं मिला।",
+      "loginSuccessTitle": "लॉगिन सफल",
+      "loginSuccessDesc": "वापसी पर स्वागत है!",
+      "loginFailedTitle": "लॉगिन विफल",
+      "loginFailedFallback": "ईमेल या पासवर्ड अमान्य है"
+    }
+  },
+  "verification": {
+    "title": "पहचान सत्यापन",
+    "description": "एक व्यक्ति एक वोट सुनिश्चित करने के लिए हम मानक पहचान जांच करते हैं।",
+    "emailTitle": "ईमेल पुष्टि",
+    "emailDesc": "अपना रजिस्टर किया हुआ ईमेल सत्यापित करें",
+    "emailSentMessage": "{{email}} पर सत्यापन लिंक भेजा गया है। अपना खाता सत्यापित करने के लिए लिंक पर क्लिक करें।",
+    "waiting": "ईमेल सत्यापन का इंतज़ार...",
+    "tipsTitle": "💡 सुझाव:",
+    "tips": {
+      "spam": "• अपना स्पैम/जंक फोल्डर जांचें",
+      "delay": "• सत्यापन में कुछ सेकंड लग सकते हैं",
+      "resend": "• ईमेल न दिखे तो \"ईमेल दोबारा भेजें\" पर क्लिक करें"
+    },
+    "resend": "ईमेल दोबारा भेजें",
+    "biometricTitle": "बायोमेट्रिक सत्यापन",
+    "biometricDesc": "आपके डिवाइस कैमरे से लाइवनैस जांच",
+    "biometricPrivacy": "आपका बायोमेट्रिक डेटा पूरी तरह आपके ब्राउज़र में प्रोसेस होता है और हमारे सर्वर पर स्टोर नहीं होता। इससे गोपनीयता बनी रहती है और डुप्लीकेट वोट रोका जाता है।",
+    "toasts": {
+      "emailVerifiedTitle": "ईमेल सत्यापित!",
+      "emailVerifiedDesc": "आपका ईमेल पुष्टि हो गया है।",
+      "emailSentTitle": "सत्यापन ईमेल भेजा गया",
+      "emailSentDesc": "{{email}} देखें और आगे बढ़ने के लिए सत्यापन लिंक पर क्लिक करें।",
+      "errorTitle": "त्रुटि",
+      "errorFallback": "सत्यापन ईमेल भेजने में विफल"
+    }
+  },
+  "camera": {
+    "permissionDenied": "कैमरा अनुमति अस्वीकार। कृपया आगे बढ़ने के लिए अनुमति दें।",
+    "verificationFailed": "सत्यापन विफल। कृपया फिर प्रयास करें।",
+    "verifiedTitle": "पहचान सत्यापित",
+    "verifiedDesc": "आपका बायोमेट्रिक डेटा पंजीकृत प्रोफाइल से मेल खाता है।",
+    "capture": "पहचान कैप्चर करें",
+    "retake": "दोबारा लें",
+    "verifying": "सत्यापित किया जा रहा है...",
+    "submitIdentity": "पहचान सबमिट करें"
+  },
+  "voterDashboard": {
+    "title": "वोटर डैशबोर्ड",
+    "welcome": "वापसी पर स्वागत है। सक्रिय चुनाव देखें और वोट दें।",
+    "identityStatus": "पहचान स्थिति",
+    "verifiedAccount": "सत्यापित खाता",
+    "noElectionsTitle": "कोई योग्य सक्रिय चुनाव नहीं",
+    "noElectionsDesc": "अभी आपकी भूमिका के लिए कोई लाइव चुनाव उपलब्ध नहीं है।",
+    "completed": "पूर्ण",
+    "inProgress": "प्रगति में",
+    "notStarted": "शुरू नहीं",
+    "votingProgress": "वोटिंग प्रगति",
+    "categoriesCount": "{{voted}}/{{total}} श्रेणियाँ",
+    "enterElection": "चुनाव में प्रवेश करें"
+  },
+  "categorySelection": {
+    "notFound": "चुनाव नहीं मिला",
+    "unavailableTitle": "चुनाव उपलब्ध नहीं",
+    "unavailableDesc": "यह चुनाव निष्क्रिय है या आपकी भूमिका के लिए उपलब्ध नहीं है।",
+    "backDashboard": "डैशबोर्ड पर वापस",
+    "selectCategory": "वोट देने के लिए कृपया एक श्रेणी चुनें।",
+    "ballotCast": "वोट सफलतापूर्वक दर्ज हुआ",
+    "viewCandidates": "उम्मीदवार देखें"
+  },
+  "candidateDetail": {
+    "notFound": "नहीं मिला",
+    "unavailableTitle": "चुनाव उपलब्ध नहीं",
+    "unavailableDesc": "यह चुनाव निष्क्रिय है या आपकी भूमिका के लिए उपलब्ध नहीं है।",
+    "backDashboard": "डैशबोर्ड पर वापस",
+    "votedTitle": "वोट पहले ही डाला जा चुका है",
+    "votedDesc": "आप इस श्रेणी में पहले ही वोट सबमिट कर चुके हैं।",
+    "backCategories": "श्रेणियों पर वापस",
+    "selectCandidate": "उम्मीदवार चुनें",
+    "manifesto": "घोषणापत्र",
+    "advantages": "फायदे",
+    "disadvantages": "नुकसान",
+    "voteFor": "{{name}} को वोट दें",
+    "confirmTitle": "अंतिम पुष्टि",
+    "confirmDesc": "{{category}} के लिए {{candidate}} को अपना वोट पुष्टि करें। यह क्रिप्टोग्राफ़िक रूप से साइन और स्थायी है।",
+    "confirmVote": "सुरक्षित वोट की पुष्टि करें",
+    "toasts": {
+      "submittedTitle": "वोट सबमिट हुआ",
+      "submittedDesc": "{{name}} के लिए आपका वोट रिकॉर्ड हो गया है।",
+      "failedTitle": "वोट विफल",
+      "failedDesc": "आपका वोट सबमिट नहीं हो सका।"
+    }
+  },
+  "candidateDashboard": {
+    "title": "कैंडिडेट डैशबोर्ड",
+    "description": "चुनावों के लिए आवेदन करें और एडमिन स्वीकृति स्थिति ट्रैक करें।",
+    "applyTitle": "चुनाव के लिए आवेदन करें",
+    "applyDesc": "किसी विशेष चुनाव और श्रेणी के लिए अपनी उम्मीदवारी सबमिट करें।",
+    "election": "चुनाव",
+    "category": "श्रेणी",
+    "candidateName": "उम्मीदवार का नाम",
+    "partyOptional": "पार्टी (वैकल्पिक)",
+    "candidateStatement": "उम्मीदवार वक्तव्य",
+    "selectActiveElection": "सक्रिय चुनाव चुनें",
+    "selectCategory": "श्रेणी चुनें",
+    "candidateNamePlaceholder": "आपका सार्वजनिक उम्मीदवार नाम",
+    "partyPlaceholder": "निर्दलीय",
+    "statementPlaceholder": "मतदाता आपको क्यों चुनें?",
+    "submitApplication": "आवेदन सबमिट करें",
+    "noActiveElections": "अभी आवेदन के लिए कोई सक्रिय चुनाव उपलब्ध नहीं है।",
+    "myApplications": "मेरे आवेदन",
+    "myApplicationsDesc": "अपने सबमिट किए गए आवेदनों की स्थिति देखें।",
+    "noApplications": "अभी तक कोई आवेदन सबमिट नहीं किया गया।",
+    "categoryAndCandidate": "श्रेणी: {{category}} • उम्मीदवार: {{candidate}}",
+    "toasts": {
+      "submittedTitle": "आवेदन सबमिट हुआ",
+      "submittedDesc": "आपका आवेदन समीक्षा के लिए एडमिन को भेज दिया गया है।",
+      "failedTitle": "सबमिशन विफल",
+      "failedDesc": "कैंडिडेट आवेदन सबमिट नहीं हो सका।"
+    }
+  },
+  "adminLogin": {
+    "title": "एडमिन साइन इन",
+    "desc": "इलेक्शन एडमिनिस्ट्रेशन डैशबोर्ड के लिए सुरक्षित एक्सेस",
+    "emailLabel": "एडमिन ईमेल",
+    "passwordLabel": "पासवर्ड",
+    "emailPlaceholder": "admin@your-org.com",
+    "signIn": "एडमिन पैनल में साइन इन करें",
+    "areYouVoter": "क्या आप वोटर हैं?",
+    "goVoterPortal": "वोटर पोर्टल पर जाएं",
+    "errors": {
+      "default": "लॉगिन विफल। कृपया फिर प्रयास करें।",
+      "userNotFound": "इस ईमेल के लिए कोई खाता नहीं मिला।",
+      "wrongPassword": "गलत पासवर्ड।",
+      "tooManyRequests": "बहुत अधिक असफल प्रयास। कृपया बाद में प्रयास करें।",
+      "invalidEmail": "अमान्य ईमेल प्रारूप।",
+      "noAdmin": "इस खाते के पास एडमिन अधिकार नहीं हैं।"
+    },
+    "toasts": {
+      "successTitle": "लॉगिन सफल",
+      "successDesc": "इलेक्शन एडमिन पैनल में आपका स्वागत है",
+      "failedTitle": "एडमिन लॉगिन विफल"
+    }
+  },
+  "adminDashboard": {
+    "title": "सिस्टम प्रशासन",
+    "description": "वैश्विक चुनाव प्रबंधन और लाइफसायकल नियंत्रण।",
+    "newElectionWizard": "नया चुनाव विज़ार्ड",
+    "live": "LIVE",
+    "offline": "OFFLINE",
+    "categories": "श्रेणियाँ",
+    "ends": "समाप्ति",
+    "stopElection": "चुनाव रोकें",
+    "startElection": "चुनाव शुरू करें",
+    "candidateApplications": "उम्मीदवार आवेदन",
+    "noPendingTitle": "कोई लंबित आवेदन नहीं",
+    "noPendingDesc": "सभी उम्मीदवार आवेदनों की समीक्षा हो चुकी है।",
+    "email": "ईमेल:",
+    "identifier": "पहचान:",
+    "party": "पार्टी:",
+    "approve": "हाँ, स्वीकृत",
+    "reject": "नहीं, अस्वीकार",
+    "resultsTitle": "श्रेणीवार रियल-टाइम परिणाम",
+    "noResultsTitle": "अभी कोई परिणाम नहीं",
+    "noResultsDesc": "वोट काउंट मॉनिटर करने के लिए एक चुनाव बनाएं।",
+    "liveStopped": "{{type}} चुनाव • {{state}}",
+    "liveState": "लाइव",
+    "stoppedState": "रुका हुआ",
+    "noCandidates": "कोई उम्मीदवार कॉन्फ़िगर नहीं है।",
+    "votes": "वोट",
+    "wizardTitle": "इलेक्शन क्रिएशन विज़ार्ड",
+    "wizardDesc": "चुनाव नियम, श्रेणियाँ और पात्रता कॉन्फ़िगर करें।",
+    "electionTitle": "चुनाव शीर्षक",
+    "electionTitlePlaceholder": "जैसे, वार्षिक बोर्ड समीक्षा",
+    "electionType": "चुनाव प्रकार",
+    "typeCollege": "कॉलेज/विश्वविद्यालय",
+    "typeCompany": "कॉर्पोरेट/कंपनी",
+    "typeSociety": "सोसायटी/समुदाय",
+    "votingCategoriesCandidates": "वोटिंग श्रेणियाँ और उम्मीदवार",
+    "addCategory": "श्रेणी जोड़ें",
+    "categoryNamePlaceholder": "श्रेणी नाम",
+    "categoryDescriptionPlaceholder": "श्रेणी विवरण",
+    "candidates": "उम्मीदवार",
+    "addCandidate": "उम्मीदवार जोड़ें",
+    "candidateNamePlaceholder": "उम्मीदवार नाम",
+    "partyPlaceholder": "पार्टी",
+    "shortDescriptionPlaceholder": "संक्षिप्त विवरण",
+    "deployElection": "चुनाव डिप्लॉय करें",
+    "toasts": {
+      "reviewFailed": "उम्मीदवार आवेदन की समीक्षा नहीं हो सकी।",
+      "createFailed": "चुनाव नहीं बन सका। विवरण के लिए कंसोल देखें।"
+    }
+  }
+}

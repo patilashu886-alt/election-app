@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash, Settings2, BarChart3 } from "lucide-react";
+import { Plus, Trash, Settings2, BarChart3, Check, X } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useTranslation } from "react-i18next";
 
 interface CandidateDraft {
   name: string;
@@ -22,11 +23,16 @@ interface CategoryDraft {
 }
 
 export function AdminDashboard() {
+  const { t } = useTranslation();
   const elections = useElectionStore((state) => state.elections);
   const toggleElection = useElectionStore((state) => state.toggleElection);
   const createElection = useElectionStore((state) => state.createElection);
   const initializeElections = useElectionStore((state) => state.initializeElections);
   const cleanupElections = useElectionStore((state) => state.cleanupElections);
+  const candidateApplications = useElectionStore((state) => state.candidateApplications);
+  const initializeCandidateApplications = useElectionStore((state) => state.initializeCandidateApplications);
+  const cleanupCandidateApplications = useElectionStore((state) => state.cleanupCandidateApplications);
+  const reviewCandidateApplication = useElectionStore((state) => state.reviewCandidateApplication);
 
   const [showWizard, setShowWizard] = useState(false);
 
@@ -38,10 +44,23 @@ export function AdminDashboard() {
   // Initialize / cleanup Firestore real-time listener
   useEffect(() => {
     initializeElections();
+    initializeCandidateApplications();
     return () => {
       cleanupElections();
+      cleanupCandidateApplications();
     };
-  }, [initializeElections, cleanupElections]);
+  }, [initializeElections, cleanupElections, initializeCandidateApplications, cleanupCandidateApplications]);
+
+  const pendingApplications = candidateApplications.filter((application) => application.status === "pending");
+
+  const handleReviewApplication = async (applicationId: string, approve: boolean) => {
+    try {
+      await reviewCandidateApplication(applicationId, approve);
+    } catch (error: any) {
+      console.error("Failed to review application:", error);
+      alert(error?.message || t("adminDashboard.toasts.reviewFailed"));
+    }
+  };
 
   const addCategory = () => {
     setNewCategories((prev) => [
@@ -160,7 +179,7 @@ export function AdminDashboard() {
     } catch (err) {
       console.error("Failed to create election:", err);
       // Optional: show toast/notification here in real app
-      alert("Could not create election. Check console for details.");
+      alert(t("adminDashboard.toasts.createFailed"));
     }
   };
 
@@ -169,11 +188,11 @@ export function AdminDashboard() {
       <div className="page-container max-w-7xl">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">System Administration</h1>
-          <p className="text-muted-foreground mt-1">Global election management and lifecycle control.</p>
+          <h1 className="text-4xl font-bold tracking-tight">{t("adminDashboard.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("adminDashboard.description")}</p>
         </div>
         <Button onClick={() => setShowWizard(true)}>
-          <Plus className="w-4 h-4 mr-2" /> New Election Wizard
+          <Plus className="w-4 h-4 mr-2" /> {t("adminDashboard.newElectionWizard")}
         </Button>
       </div>
 
@@ -193,7 +212,7 @@ export function AdminDashboard() {
                       election.isActive ? "bg-success animate-pulse" : "bg-muted-foreground"
                     }`}
                   />
-                  {election.isActive ? "LIVE" : "OFFLINE"}
+                  {election.isActive ? t("adminDashboard.live") : t("adminDashboard.offline")}
                 </div>
               </div>
               <CardTitle className="mt-2">{election.title}</CardTitle>
@@ -201,11 +220,11 @@ export function AdminDashboard() {
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Categories</span>
+                  <span className="text-muted-foreground">{t("adminDashboard.categories")}</span>
                   <span>{election.categories.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ends</span>
+                  <span className="text-muted-foreground">{t("adminDashboard.ends")}</span>
                   <span className="font-mono text-[10px] uppercase">
                     {new Date(election.endTime).toLocaleDateString()}
                   </span>
@@ -219,7 +238,7 @@ export function AdminDashboard() {
                 className="flex-1"
                 onClick={() => toggleElection(election.id, !election.isActive)}
               >
-                {election.isActive ? "Stop Election" : "Start Election"}
+                {election.isActive ? t("adminDashboard.stopElection") : t("adminDashboard.startElection")}
               </Button>
               <Button variant="outline" size="sm">
                 <Settings2 className="w-4 h-4" />
@@ -229,17 +248,56 @@ export function AdminDashboard() {
         ))}
       </div>
 
+      <div className="mt-10 space-y-4">
+        <h2 className="text-2xl font-semibold tracking-tight">{t("adminDashboard.candidateApplications")}</h2>
+        {pendingApplications.length === 0 ? (
+          <Card className="section-card border-dashed">
+            <CardHeader>
+              <CardTitle>{t("adminDashboard.noPendingTitle")}</CardTitle>
+              <CardDescription>{t("adminDashboard.noPendingDesc")}</CardDescription>
+            </CardHeader>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {pendingApplications.map((application) => (
+              <Card key={application.id} className="section-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">{application.candidateName}</CardTitle>
+                  <CardDescription>
+                    {application.electionTitle} • {application.categoryName}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p><span className="text-muted-foreground">{t("adminDashboard.email")}</span> {application.email}</p>
+                  <p><span className="text-muted-foreground">{t("adminDashboard.identifier")}</span> {application.identifier}</p>
+                  <p><span className="text-muted-foreground">{t("adminDashboard.party")}</span> {application.party}</p>
+                  <p className="text-muted-foreground">{application.description}</p>
+                </CardContent>
+                <CardFooter className="flex gap-2 border-t border-border/40 pt-4">
+                  <Button className="flex-1" size="sm" onClick={() => handleReviewApplication(application.id, true)}>
+                    <Check className="w-4 h-4 mr-1" /> {t("adminDashboard.approve")}
+                  </Button>
+                  <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleReviewApplication(application.id, false)}>
+                    <X className="w-4 h-4 mr-1" /> {t("adminDashboard.reject")}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="mt-10 space-y-6">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary" />
-          <h2 className="text-2xl font-semibold tracking-tight">Real-Time Results by Category</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">{t("adminDashboard.resultsTitle")}</h2>
         </div>
 
         {elections.length === 0 ? (
           <Card className="section-card border-dashed">
             <CardHeader>
-              <CardTitle>No Results Yet</CardTitle>
-              <CardDescription>Create an election to start monitoring vote counts.</CardDescription>
+              <CardTitle>{t("adminDashboard.noResultsTitle")}</CardTitle>
+              <CardDescription>{t("adminDashboard.noResultsDesc")}</CardDescription>
             </CardHeader>
           </Card>
         ) : (
@@ -248,7 +306,7 @@ export function AdminDashboard() {
               <CardHeader>
                 <CardTitle>{election.title}</CardTitle>
                 <CardDescription className="capitalize">
-                  {election.type} election • {election.isActive ? "Live" : "Stopped"}
+                  {t("adminDashboard.liveStopped", { type: election.type, state: election.isActive ? t("adminDashboard.liveState") : t("adminDashboard.stoppedState") })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -260,7 +318,7 @@ export function AdminDashboard() {
 
                   const chartConfig = {
                     votes: {
-                      label: "Votes",
+                      label: t("adminDashboard.votes"),
                       color: "hsl(var(--primary))",
                     },
                   };
@@ -273,7 +331,7 @@ export function AdminDashboard() {
                       </div>
 
                       {chartData.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No candidates configured.</p>
+                        <p className="text-sm text-muted-foreground">{t("adminDashboard.noCandidates")}</p>
                       ) : (
                         <ChartContainer config={chartConfig} className="h-[220px] w-full">
                           <BarChart data={chartData} margin={{ left: 8, right: 8 }}>
@@ -306,29 +364,29 @@ export function AdminDashboard() {
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="section-card w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
             <CardHeader>
-              <CardTitle>Election Creation Wizard</CardTitle>
-              <CardDescription>Configure election rules, categories, and eligibility.</CardDescription>
+              <CardTitle>{t("adminDashboard.wizardTitle")}</CardTitle>
+              <CardDescription>{t("adminDashboard.wizardDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Election Title</Label>
+                  <Label>{t("adminDashboard.electionTitle")}</Label>
                   <Input
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="e.g., Annual Board Review"
+                    placeholder={t("adminDashboard.electionTitlePlaceholder")}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Election Type</Label>
+                  <Label>{t("adminDashboard.electionType")}</Label>
                   <Select value={newType} onValueChange={(v: ElectionType) => setNewType(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="college">College/University</SelectItem>
-                      <SelectItem value="company">Corporate/Company</SelectItem>
-                      <SelectItem value="society">Society/Community</SelectItem>
+                      <SelectItem value="college">{t("adminDashboard.typeCollege")}</SelectItem>
+                      <SelectItem value="company">{t("adminDashboard.typeCompany")}</SelectItem>
+                      <SelectItem value="society">{t("adminDashboard.typeSociety")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -336,9 +394,9 @@ export function AdminDashboard() {
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label>Voting Categories & Candidates</Label>
+                  <Label>{t("adminDashboard.votingCategoriesCandidates")}</Label>
                   <Button size="sm" onClick={addCategory}>
-                    <Plus className="w-3 h-3 mr-1" /> Add Category
+                    <Plus className="w-3 h-3 mr-1" /> {t("adminDashboard.addCategory")}
                   </Button>
                 </div>
 
@@ -351,7 +409,7 @@ export function AdminDashboard() {
                       <Input
                         value={category.name}
                         onChange={(e) => updateCategoryField(categoryIndex, "name", e.target.value)}
-                        placeholder="Category Name"
+                        placeholder={t("adminDashboard.categoryNamePlaceholder")}
                         className="h-8"
                       />
                       <Input
@@ -359,7 +417,7 @@ export function AdminDashboard() {
                         onChange={(e) =>
                           updateCategoryField(categoryIndex, "description", e.target.value)
                         }
-                        placeholder="Category Description"
+                        placeholder={t("adminDashboard.categoryDescriptionPlaceholder")}
                         className="h-8"
                       />
                       <Button
@@ -374,13 +432,13 @@ export function AdminDashboard() {
 
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <Label className="text-xs">Candidates</Label>
+                        <Label className="text-xs">{t("adminDashboard.candidates")}</Label>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => addCandidate(categoryIndex)}
                         >
-                          <Plus className="w-3 h-3 mr-1" /> Add Candidate
+                          <Plus className="w-3 h-3 mr-1" /> {t("adminDashboard.addCandidate")}
                         </Button>
                       </div>
 
@@ -394,7 +452,7 @@ export function AdminDashboard() {
                             onChange={(e) =>
                               updateCandidateField(categoryIndex, candidateIndex, "name", e.target.value)
                             }
-                            placeholder="Candidate Name"
+                            placeholder={t("adminDashboard.candidateNamePlaceholder")}
                             className="h-8"
                           />
                           <Input
@@ -402,7 +460,7 @@ export function AdminDashboard() {
                             onChange={(e) =>
                               updateCandidateField(categoryIndex, candidateIndex, "party", e.target.value)
                             }
-                            placeholder="Party"
+                            placeholder={t("adminDashboard.partyPlaceholder")}
                             className="h-8"
                           />
                           <Input
@@ -410,7 +468,7 @@ export function AdminDashboard() {
                             onChange={(e) =>
                               updateCandidateField(categoryIndex, candidateIndex, "description", e.target.value)
                             }
-                            placeholder="Short Description"
+                            placeholder={t("adminDashboard.shortDescriptionPlaceholder")}
                             className="h-8"
                           />
                           <Button
@@ -431,10 +489,10 @@ export function AdminDashboard() {
             </CardContent>
             <CardFooter className="flex justify-end gap-2 border-t pt-4">
               <Button variant="outline" onClick={() => setShowWizard(false)}>
-                Cancel
+                {t("common.actions.cancel")}
               </Button>
               <Button onClick={handleCreate} disabled={!canCreateElection}>
-                Deploy Election
+                {t("adminDashboard.deployElection")}
               </Button>
             </CardFooter>
           </Card>

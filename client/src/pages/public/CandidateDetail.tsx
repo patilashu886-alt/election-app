@@ -7,6 +7,7 @@ import { ChevronLeft, Info, ArrowRight, ShieldCheck, Lock } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export function CandidateDetail() {
   const [, params] = useRoute("/election/:eid/category/:cid");
@@ -16,6 +17,7 @@ export function CandidateDetail() {
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
   const session = useElectionStore(state => state.session);
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const election = elections.find(e => e.id === params?.eid);
   const category = election?.categories.find(c => c.id === params?.cid);
@@ -23,7 +25,7 @@ export function CandidateDetail() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!election || !category) return <div>Not found</div>;
+  if (!election || !category) return <div>{t("candidateDetail.notFound")}</div>;
 
   const allowedType = getRoleElectionType(session.role);
   const hasAlreadyVoted = (hasVotedCategories[election.id] || []).includes(category.id);
@@ -34,11 +36,11 @@ export function CandidateDetail() {
         <div className="page-container max-w-6xl">
         <Card className="section-card">
           <CardHeader>
-            <CardTitle>Election Unavailable</CardTitle>
-            <CardDescription>This election is inactive or not available for your role.</CardDescription>
+            <CardTitle>{t("candidateDetail.unavailableTitle")}</CardTitle>
+            <CardDescription>{t("candidateDetail.unavailableDesc")}</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
+            <Button onClick={() => setLocation('/dashboard')}>{t("candidateDetail.backDashboard")}</Button>
           </CardFooter>
         </Card>
         </div>
@@ -52,11 +54,11 @@ export function CandidateDetail() {
         <div className="page-container max-w-6xl">
         <Card className="section-card">
           <CardHeader>
-            <CardTitle>Vote Already Cast</CardTitle>
-            <CardDescription>You have already submitted your vote in this category.</CardDescription>
+            <CardTitle>{t("candidateDetail.votedTitle")}</CardTitle>
+            <CardDescription>{t("candidateDetail.votedDesc")}</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => setLocation(`/election/${election.id}`)}>Back to Categories</Button>
+            <Button onClick={() => setLocation(`/election/${election.id}`)}>{t("candidateDetail.backCategories")}</Button>
           </CardFooter>
         </Card>
         </div>
@@ -70,11 +72,11 @@ export function CandidateDetail() {
     setIsSubmitting(true);
     try {
       await submitVote(election.id, category.id, selectedCandidate.id);
-      toast({ title: "Vote submitted", description: `Your vote for ${selectedCandidate.name} has been recorded.` });
+      toast({ title: t("candidateDetail.toasts.submittedTitle"), description: t("candidateDetail.toasts.submittedDesc", { name: selectedCandidate.name }) });
       setShowConfirm(false);
       setLocation(`/election/${election.id}`);
     } catch (err: any) {
-      toast({ title: "Vote failed", description: err.message || "Could not submit your vote." });
+      toast({ title: t("candidateDetail.toasts.failedTitle"), description: err.message || t("candidateDetail.toasts.failedDesc") });
     } finally {
       setIsSubmitting(false);
     }
@@ -85,14 +87,14 @@ export function CandidateDetail() {
       <div className="page-container max-w-6xl">
       <div className="mb-8">
         <Button variant="ghost" onClick={() => setLocation(`/election/${election.id}`)} className="mb-4">
-          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Categories
+          <ChevronLeft className="w-4 h-4 mr-1" /> {t("candidateDetail.backCategories")}
         </Button>
         <div className="flex items-center gap-3 mb-2">
           <Badge variant="outline">{election.title}</Badge>
           <ArrowRight className="w-3 h-3 text-muted-foreground" />
           <Badge>{category.name}</Badge>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Select Candidate</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("candidateDetail.selectCandidate")}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,18 +110,18 @@ export function CandidateDetail() {
             </CardHeader>
             <CardContent className="flex-1 space-y-4">
               <div className="text-sm">
-                 <div className="font-bold mb-1 flex items-center gap-1"><Info className="w-3 h-3" /> Manifesto</div>
+                 <div className="font-bold mb-1 flex items-center gap-1"><Info className="w-3 h-3" /> {t("candidateDetail.manifesto")}</div>
                  <p className="text-muted-foreground italic">"{candidate.manifesto}"</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                   <div className="text-[10px] uppercase font-bold text-success mb-1">Advantages</div>
+                   <div className="text-[10px] uppercase font-bold text-success mb-1">{t("candidateDetail.advantages")}</div>
                    <ul className="text-xs list-disc list-inside space-y-0.5">
                      {candidate.advantages.map(a => <li key={a}>{a}</li>)}
                    </ul>
                 </div>
                 <div>
-                   <div className="text-[10px] uppercase font-bold text-destructive mb-1">Disadvantages</div>
+                   <div className="text-[10px] uppercase font-bold text-destructive mb-1">{t("candidateDetail.disadvantages")}</div>
                    <ul className="text-xs list-disc list-inside space-y-0.5">
                      {candidate.disadvantages.map(d => <li key={d}>{d}</li>)}
                    </ul>
@@ -128,7 +130,7 @@ export function CandidateDetail() {
             </CardContent>
             <CardFooter className="pt-4 border-t border-border/40">
               <Button onClick={() => { setSelectedCandidate(candidate); setShowConfirm(true); }} className="w-full">
-                Vote for {candidate.name.split(' ')[0]}
+                {t("candidateDetail.voteFor", { name: candidate.name.split(' ')[0] })}
               </Button>
             </CardFooter>
           </Card>
@@ -139,10 +141,10 @@ export function CandidateDetail() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5 text-warning" /> Final Confirmation
+              <Lock className="w-5 h-5 text-warning" /> {t("candidateDetail.confirmTitle")}
             </DialogTitle>
             <DialogDescription>
-              Confirm your vote for <strong>{selectedCandidate?.name}</strong> as <strong>{category.name}</strong>. This is cryptographically signed and permanent.
+              {t("candidateDetail.confirmDesc", { candidate: selectedCandidate?.name, category: category.name })}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-4">
@@ -151,8 +153,8 @@ export function CandidateDetail() {
              </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>Cancel</Button>
-            <Button onClick={handleVote} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Confirm Secure Vote"}</Button>
+            <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>{t("common.actions.cancel")}</Button>
+            <Button onClick={handleVote} disabled={isSubmitting}>{isSubmitting ? t("common.status.submitting") : t("candidateDetail.confirmVote")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

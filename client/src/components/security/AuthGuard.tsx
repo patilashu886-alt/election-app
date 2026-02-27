@@ -4,7 +4,7 @@ import { useElectionStore } from "@/store/useElectionStore";
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  requireRole?: 'voter' | 'admin';
+  requireRole?: 'voter' | 'admin' | 'candidate';
   requireActiveElection?: boolean;
 }
 
@@ -24,21 +24,39 @@ export function AuthGuard({ children, requireRole, requireActiveElection = false
     }
 
     if (requireRole === 'admin' && session.role !== 'admin') {
-      setLocation("/dashboard");
+      setLocation(session.role === 'Candidate' ? '/candidate/dashboard' : '/dashboard');
       return;
     }
 
-    if (requireRole === 'voter' && session.role === 'admin') {
-      setLocation("/admin");
+    if (requireRole === 'candidate' && session.role !== 'Candidate') {
+      if (session.role === 'admin') {
+        setLocation('/admin');
+      } else {
+        setLocation('/dashboard');
+      }
       return;
     }
 
-    if (requireRole === 'voter' && session.role !== 'admin' && !isVerified && location !== '/verification') {
+    if (requireRole === 'voter' && (session.role === 'admin' || session.role === 'Candidate')) {
+      if (session.role === 'admin') {
+        setLocation('/admin');
+      } else {
+        setLocation('/candidate/dashboard');
+      }
+      return;
+    }
+
+    if (requireRole === 'candidate' && location === '/verification') {
+      setLocation('/candidate/dashboard');
+      return;
+    }
+
+    if (requireRole === 'voter' && session.role !== 'admin' && session.role !== 'Candidate' && !isVerified && location !== '/verification') {
       setLocation('/verification');
       return;
     }
 
-    if (requireRole === 'voter' && session.role !== 'admin' && isVerified && location === '/verification') {
+    if (requireRole === 'voter' && session.role !== 'admin' && session.role !== 'Candidate' && isVerified && location === '/verification') {
       setLocation('/dashboard');
     }
   }, [session, isVerified, location, requireRole, setLocation]);

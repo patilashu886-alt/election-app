@@ -7,6 +7,7 @@ import { MailCheck, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sendEmailVerification, isEmailVerified } from "@/lib/firebase-auth-helpers";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export function Verification() {
   const [, setLocation] = useLocation();
@@ -14,6 +15,7 @@ export function Verification() {
   const setVerificationStep = useElectionStore(state => state.setVerificationStep);
   const userEmail = useElectionStore(state => state.session.email);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [isCheckingVerification, setIsCheckingVerification] = useState(false);
@@ -44,7 +46,7 @@ export function Verification() {
         if (verified) {
           setVerificationStep('email_verified');
           setVerificationStep('camera_pending');
-          toast({ title: "Email verified!", description: "Your email has been confirmed." });
+          toast({ title: t("verification.toasts.emailVerifiedTitle"), description: t("verification.toasts.emailVerifiedDesc") });
         }
       } catch (err) {
         console.error('Error checking email verification:', err);
@@ -63,13 +65,13 @@ export function Verification() {
       await sendEmailVerification();
       setEmailSent(true);
       toast({ 
-        title: "Verification email sent", 
-        description: `Check ${userEmail} and click the verification link to continue.` 
+        title: t("verification.toasts.emailSentTitle"), 
+        description: t("verification.toasts.emailSentDesc", { email: userEmail })
       });
     } catch (err: any) {
-      const message = err?.message || "Failed to send verification email";
+      const message = err?.message || t("verification.toasts.errorFallback");
       setLastError(message);
-      toast({ title: "Error", description: message });
+      toast({ title: t("verification.toasts.errorTitle"), description: message });
       console.error('Email verification error:', err);
     } finally {
       setIsSendingEmail(false);
@@ -91,9 +93,9 @@ export function Verification() {
     <div className="page-shell animate-in fade-in duration-500">
       <div className="page-container max-w-2xl">
       <div className="mb-8 space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Identity Verification</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("verification.title")}</h1>
         <p className="text-muted-foreground">
-          To ensure one person one vote, we require standard identity checks.
+          {t("verification.description")}
         </p>
       </div>
 
@@ -107,8 +109,8 @@ export function Verification() {
               {step === 'email_sent' ? '1' : <CheckCircle2 className="w-6 h-6" />}
             </div>
             <div>
-              <CardTitle>Email Confirmation</CardTitle>
-              <CardDescription>Verify your registration email</CardDescription>
+              <CardTitle>{t("verification.emailTitle")}</CardTitle>
+              <CardDescription>{t("verification.emailDesc")}</CardDescription>
             </div>
           </CardHeader>
           {step === 'email_sent' && (
@@ -116,8 +118,7 @@ export function Verification() {
               <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <MailCheck className="w-5 h-5 text-primary" />
                 <div className="text-sm">
-                  A verification link has been sent to <span className="font-semibold">{userEmail}</span>. 
-                  Click the link in your email to verify your account.
+                  {t("verification.emailSentMessage", { email: userEmail })}
                 </div>
               </div>
 
@@ -130,14 +131,14 @@ export function Verification() {
               
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-3">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Waiting for email verification...
+                {t("verification.waiting")}
               </div>
 
               <div className="text-xs text-muted-foreground space-y-1 p-2 bg-muted/30 rounded">
-                <p>💡 <strong>Tips:</strong></p>
-                <p>• Check your spam/junk folder</p>
-                <p>• Verification may take a few seconds</p>
-                <p>• Click "Resend Email" if you don't see it</p>
+                <p><strong>{t("verification.tipsTitle")}</strong></p>
+                <p>{t("verification.tips.spam")}</p>
+                <p>{t("verification.tips.delay")}</p>
+                <p>{t("verification.tips.resend")}</p>
               </div>
 
               <Button 
@@ -149,10 +150,10 @@ export function Verification() {
                 {isSendingEmail ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
+                    {t("common.status.sending")}
                   </>
                 ) : (
-                  "Resend Email"
+                  t("verification.resend")
                 )}
               </Button>
             </CardContent>
@@ -168,15 +169,15 @@ export function Verification() {
               2
             </div>
             <div>
-              <CardTitle>Biometric Verification</CardTitle>
-              <CardDescription>Liveness check using your device camera</CardDescription>
+              <CardTitle>{t("verification.biometricTitle")}</CardTitle>
+              <CardDescription>{t("verification.biometricDesc")}</CardDescription>
             </div>
           </CardHeader>
           {step === 'camera_pending' && (
              <CardContent className="pt-4 border-t mt-4 border-border/40">
                <div className="bg-warning/10 border border-warning/20 p-4 rounded-lg mb-6 flex gap-3 text-sm text-warning-foreground">
                  <AlertCircle className="w-5 h-5 shrink-0" />
-                 <p>Your biometric data is processed entirely in your browser and is never stored on our servers. This ensures privacy while preventing duplicate votes.</p>
+                 <p>{t("verification.biometricPrivacy")}</p>
                </div>
                <CameraVerification onVerified={handleCameraVerified} />
              </CardContent>

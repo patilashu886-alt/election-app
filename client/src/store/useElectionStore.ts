@@ -13,9 +13,10 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-export type Role = 'Student' | 'Employee' | 'Society' | 'admin' | null;
+export type Role = 'Student' | 'Employee' | 'Society' | 'Candidate' | 'admin' | null;
 export type ElectionType = 'college' | 'company' | 'society';
 export type VerificationStep = 'idle' | 'email_sent' | 'email_verified' | 'camera_pending' | 'camera_verified';
+export type CandidateApplicationStatus = 'pending' | 'approved' | 'rejected';
 
 export const getRoleElectionType = (role: Role): ElectionType | null => {
   if (role === 'Student') return 'college';
@@ -26,7 +27,7 @@ export const getRoleElectionType = (role: Role): ElectionType | null => {
 
 const normalizeRole = (role: Role | string): Role => {
   if (role === 'Society Member') return 'Society';
-  if (role === 'Student' || role === 'Employee' || role === 'Society' || role === 'admin') return role;
+  if (role === 'Student' || role === 'Employee' || role === 'Society' || role === 'Candidate' || role === 'admin') return role;
   return null;
 };
 
@@ -67,6 +68,23 @@ export interface Election {
   createdAt?: string;
 }
 
+export interface CandidateApplication {
+  id: string;
+  electionId: string;
+  electionTitle: string;
+  categoryId: string;
+  categoryName: string;
+  candidateName: string;
+  party: string;
+  description: string;
+  email: string;
+  identifier: string;
+  status: CandidateApplicationStatus;
+  createdAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
 interface UserSession {
   email: string | null;
   role: Role;
@@ -87,10 +105,14 @@ interface ElectionStore {
   // Elections – now real-time from Firestore
   elections: Election[];
   unsubscribe: Unsubscribe | null;
+  candidateApplications: CandidateApplication[];
+  applicationsUnsubscribe: Unsubscribe | null;
 
   // Actions
   initializeElections: () => void;
   cleanupElections: () => void;
+  initializeCandidateApplications: () => void;
+  cleanupCandidateApplications: () => void;
 
   login: (email: string, role: Role, identifier?: string) => void;
   logout: () => void;
@@ -102,6 +124,14 @@ interface ElectionStore {
   createElection: (election: Omit<Election, 'id'>) => Promise<void>;
   toggleElection: (id: string, isActive: boolean) => Promise<void>;
   deleteElection: (id: string) => Promise<void>;
+  applyForElection: (payload: {
+    electionId: string;
+    categoryId: string;
+    candidateName: string;
+    party: string;
+    description: string;
+  }) => Promise<void>;
+  reviewCandidateApplication: (applicationId: string, approve: boolean) => Promise<void>;
 }
 
 export const useElectionStore = create<ElectionStore>()(
@@ -115,6 +145,8 @@ export const useElectionStore = create<ElectionStore>()(
       identityPhotoUrl: null,
       elections: [],
       unsubscribe: null,
+      candidateApplications: [],
+      applicationsUnsubscribe: null,
 
       // ── Firestore real-time ────────────────────────────────────────
       initializeElections: () => {
@@ -141,6 +173,33 @@ export const useElectionStore = create<ElectionStore>()(
         if (unsubscribe) {
           unsubscribe();
           set({ unsubscribe: null });
+        }
+      },
+
+      initializeCandidateApplications: () => {
+        const { applicationsUnsubscribe } = get();
+        if (applicationsUnsubscribe) return;
+
+        const q = query(collection(db, 'candidateApplications'), orderBy('createdAt', 'desc'));
+
+        const unsub = onSnapshot(q, (snapshot) => {
+          const list = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          })) as CandidateApplication[];
+          set({ candidateApplications: list });
+        }, (err) => {
+          console.error('Candidate applications listener error:', err);
+        });
+
+        set({ applicationsUnsubscribe: unsub });
+      },
+
+      cleanupCandidateApplications: () => {
+        const { applicationsUnsubscribe } = get();
+        if (applicationsUnsubscribe) {
+          applicationsUnsubscribe();
+          set({ applicationsUnsubscribe: null });
         }
       },
 
@@ -273,6 +332,115 @@ export const useElectionStore = create<ElectionStore>()(
         // Note: delete not implemented in your UI yet
         // If you add delete button later, implement here with deleteDoc()
         console.warn('Delete not implemented yet');
+      },
+
+      applyForElection: async ({ electionId, categoryId, candidateName, party, description }) => {
+        const state = get();
+        const { session, elections, candidateApplications } = state;
+
+        if (!session.email || session.role !== 'Candidate') {
+          throw new Error('Only candidate accounts can apply.');
+        }
+
+        const election = elections.find((item) => item.id === electionId);
+        if (!election) {
+          throw new Error('Election not found.');
+        }
+
+        const category = election.categories.find((item) => item.id === categoryId);
+        if (!category) {
+          throw new Error('Category not found.');
+        }
+
+        const hasOpenApplication = candidateApplications.some(
+          (item) =>
+            item.electionId === electionId &&
+            item.categoryId === categoryId &&
+            item.email === session.email &&
+            item.status === 'pending'
+        );
+
+        if (hasOpenApplication) {
+          throw new Error('You already have a pending application for this category.');
+        }
+
+        await addDoc(collection(db, 'candidateApplications'), {
+          electionId,
+          electionTitle: election.title,
+          categoryId,
+          categoryName: category.name,
+          candidateName: candidateName.trim(),
+          party: party.trim() || 'Independent',
+          description: description.trim(),
+          email: session.email,
+          identifier: session.identifier || 'N/A',
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+      },
+
+      reviewCandidateApplication: async (applicationId, approve) => {
+        const state = get();
+        const { session, candidateApplications } = state;
+
+        if (session.role !== 'admin') {
+          throw new Error('Only admins can review candidate applications.');
+        }
+
+        const application = candidateApplications.find((item) => item.id === applicationId);
+        if (!application) {
+          throw new Error('Application not found.');
+        }
+
+        if (application.status !== 'pending') {
+          throw new Error('Application already reviewed.');
+        }
+
+        if (approve) {
+          const electionRef = doc(db, 'elections', application.electionId);
+          const electionSnapshot = await getDoc(electionRef);
+
+          if (!electionSnapshot.exists()) {
+            throw new Error('Election not found for this application.');
+          }
+
+          const election = {
+            id: electionSnapshot.id,
+            ...electionSnapshot.data()
+          } as Election;
+
+          const updatedCategories = election.categories.map((category) => {
+            if (category.id !== application.categoryId) return category;
+
+            const nextCandidate = {
+              id: `cand-app-${application.id}`,
+              name: application.candidateName,
+              party: application.party,
+              description: application.description,
+              manifesto: application.description,
+              advantages: ['Approved candidate'],
+              disadvantages: ['No issues reported'],
+              votes: 0,
+              imageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(application.candidateName)}`
+            };
+
+            const alreadyExists = category.candidates.some((candidate) => candidate.id === nextCandidate.id);
+            if (alreadyExists) return category;
+
+            return {
+              ...category,
+              candidates: [...category.candidates, nextCandidate]
+            };
+          });
+
+          await updateDoc(electionRef, { categories: updatedCategories });
+        }
+
+        await updateDoc(doc(db, 'candidateApplications', applicationId), {
+          status: approve ? 'approved' : 'rejected',
+          reviewedAt: new Date().toISOString(),
+          reviewedBy: session.email || 'admin'
+        });
       }
     }),
     {

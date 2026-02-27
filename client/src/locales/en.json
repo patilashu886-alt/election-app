@@ -1,0 +1,268 @@
+{
+  "common": {
+    "appName": "SecureVote",
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "mr": "Marathi",
+      "hi": "Hindi"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "back": "Back",
+      "logout": "Sign Out",
+      "dashboard": "Dashboard",
+      "candidate": "Candidate",
+      "admin": "Admin"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "sending": "Sending...",
+      "submitting": "Submitting...",
+      "loggingIn": "Logging in...",
+      "signingIn": "Signing in..."
+    }
+  },
+  "navbar": {
+    "portal": "Election Portal",
+    "adminLogin": "Admin Login"
+  },
+  "notFound": {
+    "title": "404 Page Not Found",
+    "description": "Did you forget to add the page to the router?"
+  },
+  "landing": {
+    "badge": "v2.0 Advanced Protocol",
+    "heroTitle": "Secure & Verifiable Multi-Election System",
+    "heroDescription": "The next generation of democratic participation. Unified voting for colleges, companies, and societies with role-based identity management.",
+    "featureBiometric": "Biometric Identity",
+    "featureMultiAccess": "Multi-Election Access",
+    "registerTitle": "User Registration",
+    "registerDescription": "Select your role and enter your details to access election features.",
+    "selectRole": "Select Your Role",
+    "roles": {
+      "student": "Student",
+      "staff": "Staff",
+      "society": "Society",
+      "candidate": "Candidate"
+    },
+    "email": "Email Address",
+    "password": "Password",
+    "fullName": "Full Name",
+    "studentId": "Student ID",
+    "employeeId": "Employee ID",
+    "societyId": "Society ID",
+    "candidateId": "Candidate ID",
+    "placeholders": {
+      "email": "your@email.com",
+      "password": "Create a password",
+      "fullName": "Your full name",
+      "enter": "Enter {{label}}"
+    },
+    "registerVerify": "Register & Verify",
+    "registerContinue": "Register & Continue",
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in",
+    "loginModalTitle": "Log In to Your Account",
+    "dontHaveAccount": "Don't have an account?",
+    "signup": "Sign up",
+    "loginButton": "Log In",
+    "toasts": {
+      "accountCreatedTitle": "Account created",
+      "accountCreatedCandidate": "Account created successfully. Continue to candidate dashboard.",
+      "accountCreatedVoter": "Account created successfully. Proceed to verification.",
+      "signupErrorTitle": "Signup error",
+      "signupErrorFallback": "Failed to create account",
+      "noProfile": "No profile found for this account.",
+      "loginSuccessTitle": "Login successful",
+      "loginSuccessDesc": "Welcome back!",
+      "loginFailedTitle": "Login failed",
+      "loginFailedFallback": "Invalid email or password"
+    }
+  },
+  "verification": {
+    "title": "Identity Verification",
+    "description": "To ensure one person one vote, we require standard identity checks.",
+    "emailTitle": "Email Confirmation",
+    "emailDesc": "Verify your registration email",
+    "emailSentMessage": "A verification link has been sent to {{email}}. Click the link in your email to verify your account.",
+    "waiting": "Waiting for email verification...",
+    "tipsTitle": "💡 Tips:",
+    "tips": {
+      "spam": "• Check your spam/junk folder",
+      "delay": "• Verification may take a few seconds",
+      "resend": "• Click \"Resend Email\" if you don't see it"
+    },
+    "resend": "Resend Email",
+    "biometricTitle": "Biometric Verification",
+    "biometricDesc": "Liveness check using your device camera",
+    "biometricPrivacy": "Your biometric data is processed entirely in your browser and is never stored on our servers. This ensures privacy while preventing duplicate votes.",
+    "toasts": {
+      "emailVerifiedTitle": "Email verified!",
+      "emailVerifiedDesc": "Your email has been confirmed.",
+      "emailSentTitle": "Verification email sent",
+      "emailSentDesc": "Check {{email}} and click the verification link to continue.",
+      "errorTitle": "Error",
+      "errorFallback": "Failed to send verification email"
+    }
+  },
+  "camera": {
+    "permissionDenied": "Camera access denied. Please enable permissions to proceed.",
+    "verificationFailed": "Verification failed. Please try again.",
+    "verifiedTitle": "Identity Verified",
+    "verifiedDesc": "Your biometric data matched the registered profile.",
+    "capture": "Capture Identity",
+    "retake": "Retake",
+    "verifying": "Verifying...",
+    "submitIdentity": "Submit Identity"
+  },
+  "voterDashboard": {
+    "title": "Voter Dashboard",
+    "welcome": "Welcome back. View active elections and cast your vote.",
+    "identityStatus": "Identity Status",
+    "verifiedAccount": "Verified Account",
+    "noElectionsTitle": "No Eligible Active Elections",
+    "noElectionsDesc": "There are no live elections available for your role right now.",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "notStarted": "Not Started",
+    "votingProgress": "Voting Progress",
+    "categoriesCount": "{{voted}}/{{total}} Categories",
+    "enterElection": "Enter Election"
+  },
+  "categorySelection": {
+    "notFound": "Election not found",
+    "unavailableTitle": "Election Unavailable",
+    "unavailableDesc": "This election is inactive or not available for your role.",
+    "backDashboard": "Back to Dashboard",
+    "selectCategory": "Please select a category to cast your vote.",
+    "ballotCast": "Ballot Cast Successfully",
+    "viewCandidates": "View Candidates"
+  },
+  "candidateDetail": {
+    "notFound": "Not found",
+    "unavailableTitle": "Election Unavailable",
+    "unavailableDesc": "This election is inactive or not available for your role.",
+    "backDashboard": "Back to Dashboard",
+    "votedTitle": "Vote Already Cast",
+    "votedDesc": "You have already submitted your vote in this category.",
+    "backCategories": "Back to Categories",
+    "selectCandidate": "Select Candidate",
+    "manifesto": "Manifesto",
+    "advantages": "Advantages",
+    "disadvantages": "Disadvantages",
+    "voteFor": "Vote for {{name}}",
+    "confirmTitle": "Final Confirmation",
+    "confirmDesc": "Confirm your vote for {{candidate}} as {{category}}. This is cryptographically signed and permanent.",
+    "confirmVote": "Confirm Secure Vote",
+    "toasts": {
+      "submittedTitle": "Vote submitted",
+      "submittedDesc": "Your vote for {{name}} has been recorded.",
+      "failedTitle": "Vote failed",
+      "failedDesc": "Could not submit your vote."
+    }
+  },
+  "candidateDashboard": {
+    "title": "Candidate Dashboard",
+    "description": "Apply to elections and track admin approval status.",
+    "applyTitle": "Apply for an Election",
+    "applyDesc": "Submit your candidature for a specific election and category.",
+    "election": "Election",
+    "category": "Category",
+    "candidateName": "Candidate Name",
+    "partyOptional": "Party (optional)",
+    "candidateStatement": "Candidate Statement",
+    "selectActiveElection": "Select active election",
+    "selectCategory": "Select category",
+    "candidateNamePlaceholder": "Your public candidate name",
+    "partyPlaceholder": "Independent",
+    "statementPlaceholder": "Why should voters select you?",
+    "submitApplication": "Submit Application",
+    "noActiveElections": "No active elections available for applications right now.",
+    "myApplications": "My Applications",
+    "myApplicationsDesc": "Review the status of your submitted applications.",
+    "noApplications": "No applications submitted yet.",
+    "categoryAndCandidate": "Category: {{category}} • Candidate: {{candidate}}",
+    "toasts": {
+      "submittedTitle": "Application submitted",
+      "submittedDesc": "Your application has been sent to admin for review.",
+      "failedTitle": "Submission failed",
+      "failedDesc": "Could not submit candidate application."
+    }
+  },
+  "adminLogin": {
+    "title": "Admin Sign In",
+    "desc": "Secure access to the election administration dashboard",
+    "emailLabel": "Admin Email",
+    "passwordLabel": "Password",
+    "emailPlaceholder": "admin@your-org.com",
+    "signIn": "Sign In to Admin Panel",
+    "areYouVoter": "Are you a voter?",
+    "goVoterPortal": "Go to Voter Portal",
+    "errors": {
+      "default": "Login failed. Please try again.",
+      "userNotFound": "No account found with this email.",
+      "wrongPassword": "Incorrect password.",
+      "tooManyRequests": "Too many failed attempts. Please try again later.",
+      "invalidEmail": "Invalid email format.",
+      "noAdmin": "This account does not have admin privileges."
+    },
+    "toasts": {
+      "successTitle": "Login Successful",
+      "successDesc": "Welcome to the Election Admin Panel",
+      "failedTitle": "Admin Login Failed"
+    }
+  },
+  "adminDashboard": {
+    "title": "System Administration",
+    "description": "Global election management and lifecycle control.",
+    "newElectionWizard": "New Election Wizard",
+    "live": "LIVE",
+    "offline": "OFFLINE",
+    "categories": "Categories",
+    "ends": "Ends",
+    "stopElection": "Stop Election",
+    "startElection": "Start Election",
+    "candidateApplications": "Candidate Applications",
+    "noPendingTitle": "No Pending Applications",
+    "noPendingDesc": "All candidate applications have been reviewed.",
+    "email": "Email:",
+    "identifier": "Identifier:",
+    "party": "Party:",
+    "approve": "Yes, Approve",
+    "reject": "No, Reject",
+    "resultsTitle": "Real-Time Results by Category",
+    "noResultsTitle": "No Results Yet",
+    "noResultsDesc": "Create an election to start monitoring vote counts.",
+    "liveStopped": "{{type}} election • {{state}}",
+    "liveState": "Live",
+    "stoppedState": "Stopped",
+    "noCandidates": "No candidates configured.",
+    "votes": "Votes",
+    "wizardTitle": "Election Creation Wizard",
+    "wizardDesc": "Configure election rules, categories, and eligibility.",
+    "electionTitle": "Election Title",
+    "electionTitlePlaceholder": "e.g., Annual Board Review",
+    "electionType": "Election Type",
+    "typeCollege": "College/University",
+    "typeCompany": "Corporate/Company",
+    "typeSociety": "Society/Community",
+    "votingCategoriesCandidates": "Voting Categories & Candidates",
+    "addCategory": "Add Category",
+    "categoryNamePlaceholder": "Category Name",
+    "categoryDescriptionPlaceholder": "Category Description",
+    "candidates": "Candidates",
+    "addCandidate": "Add Candidate",
+    "candidateNamePlaceholder": "Candidate Name",
+    "partyPlaceholder": "Party",
+    "shortDescriptionPlaceholder": "Short Description",
+    "deployElection": "Deploy Election",
+    "toasts": {
+      "reviewFailed": "Could not review candidate application.",
+      "createFailed": "Could not create election. Check console for details."
+    }
+  }
+}

@@ -2,12 +2,14 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import { Camera, RefreshCw, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIdentityVerification } from '@/hooks/useFirebaseMock';
+import { useTranslation } from 'react-i18next';
 
 interface CameraVerificationProps {
   onVerified: () => void;
 }
 
 export function CameraVerification({ onVerified }: CameraVerificationProps) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -27,7 +29,7 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (err) {
-      setError("Camera access denied. Please enable permissions to proceed.");
+      setError(t("camera.permissionDenied"));
     }
   };
 
@@ -75,7 +77,7 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
         onVerified();
       }, 1500);
     } else {
-      setError("Verification failed. Please try again.");
+      setError(t("camera.verificationFailed"));
     }
   };
 
@@ -85,8 +87,8 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
         <div className="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center">
           <ShieldCheck className="w-10 h-10 text-success" />
         </div>
-        <h3 className="text-xl font-semibold text-foreground">Identity Verified</h3>
-        <p className="text-muted-foreground text-center">Your biometric data matched the registered profile.</p>
+        <h3 className="text-xl font-semibold text-foreground">{t("camera.verifiedTitle")}</h3>
+        <p className="text-muted-foreground text-center">{t("camera.verifiedDesc")}</p>
       </div>
     );
   }
@@ -130,24 +132,24 @@ export function CameraVerification({ onVerified }: CameraVerificationProps) {
             disabled={!stream}
           >
             <Camera className="w-5 h-5 mr-2" />
-            Capture Identity
+            {t("camera.capture")}
           </Button>
         ) : (
           <>
             <Button variant="outline" className="flex-1" onClick={retakePhoto} disabled={isProcessing}>
               <RefreshCw className="w-4 h-4 mr-2" />
-              Retake
+              {t("camera.retake")}
             </Button>
             <Button className="flex-1" onClick={handleVerify} disabled={isProcessing}>
               {isProcessing ? (
                 <span className="flex items-center">
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Verifying...
+                  {t("camera.verifying")}
                 </span>
               ) : (
                 <span className="flex items-center">
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Submit Identity
+                  {t("camera.submitIdentity")}
                 </span>
               )}
             </Button>

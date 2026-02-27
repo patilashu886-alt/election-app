@@ -9,10 +9,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export function AdminLogin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const login = useElectionStore((state) => state.login);
   const session = useElectionStore((state) => state.session);
 
@@ -46,38 +48,38 @@ export function AdminLogin() {
       if (!userData || userData.role !== "admin") {
         // Optional: sign out if no admin rights (cleaner UX)
         await auth.signOut();
-        throw new Error("This account does not have admin privileges.");
+        throw new Error(t("adminLogin.errors.noAdmin"));
       }
 
       // Step 3: Update global store
       login(trimmedEmail, "admin", userData.identifier || "ADMIN");
 
       toast({
-        title: "Login Successful",
-        description: "Welcome to the Election Admin Panel",
+        title: t("adminLogin.toasts.successTitle"),
+        description: t("adminLogin.toasts.successDesc"),
       });
 
       setLocation("/admin");
     } catch (err: unknown) {
       const error = err as AuthError;
 
-      let message = "Login failed. Please try again.";
+      let message = t("adminLogin.errors.default");
 
       if (error.code === "auth/user-not-found") {
-        message = "No account found with this email.";
+        message = t("adminLogin.errors.userNotFound");
       } else if (error.code === "auth/wrong-password") {
-        message = "Incorrect password.";
+        message = t("adminLogin.errors.wrongPassword");
       } else if (error.code === "auth/too-many-requests") {
-        message = "Too many failed attempts. Please try again later.";
+        message = t("adminLogin.errors.tooManyRequests");
       } else if (error.code === "auth/invalid-email") {
-        message = "Invalid email format.";
+        message = t("adminLogin.errors.invalidEmail");
       } else if (error.message?.includes("admin")) {
         message = error.message; // Keep custom "no admin access" message
       }
 
       toast({
         variant: "destructive",
-        title: "Admin Login Failed",
+        title: t("adminLogin.toasts.failedTitle"),
         description: message,
       });
 
@@ -98,10 +100,10 @@ export function AdminLogin() {
             </div>
             <div className="space-y-2">
               <CardTitle className="text-3xl font-bold tracking-tight">
-                Admin Sign In
+                {t("adminLogin.title")}
               </CardTitle>
               <CardDescription className="text-base">
-                Secure access to the election administration dashboard
+                {t("adminLogin.desc")}
               </CardDescription>
             </div>
           </CardHeader>
@@ -110,7 +112,7 @@ export function AdminLogin() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium leading-none">
-                  Admin Email
+                  {t("adminLogin.emailLabel")}
                 </label>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -121,7 +123,7 @@ export function AdminLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="h-11 pl-10"
-                    placeholder="admin@your-org.com"
+                    placeholder={t("adminLogin.emailPlaceholder")}
                     autoComplete="email"
                     autoFocus
                     required
@@ -132,7 +134,7 @@ export function AdminLogin() {
 
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium leading-none">
-                  Password
+                  {t("adminLogin.passwordLabel")}
                 </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -158,11 +160,11 @@ export function AdminLogin() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t("common.status.signingIn")}
                   </>
                 ) : (
                   <>
-                    Sign In to Admin Panel
+                    {t("adminLogin.signIn")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
@@ -170,9 +172,9 @@ export function AdminLogin() {
             </form>
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
-              Are you a voter?{" "}
+              {t("adminLogin.areYouVoter")}{" "}
               <Link href="/" className="font-medium text-primary hover:underline">
-                Go to Voter Portal
+                {t("adminLogin.goVoterPortal")}
               </Link>
             </div>
           </CardContent>

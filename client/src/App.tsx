@@ -14,6 +14,7 @@ import { Verification } from "@/pages/public/Verification";
 import { VoterDashboard } from "@/pages/public/VoterDashboard";
 import { CategorySelection } from "@/pages/public/CategorySelection";
 import { CandidateDetail } from "@/pages/public/CandidateDetail";
+import { CandidateDashboard } from "@/pages/public/CandidateDashboard";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
 import { AdminLogin } from "@/pages/admin/AdminLogin";
 import { useElectionStore } from "@/store/useElectionStore";
@@ -44,6 +45,12 @@ function Router() {
           <Route path="/dashboard">
             <AuthGuard requireRole="voter">
               <VoterDashboard />
+            </AuthGuard>
+          </Route>
+
+          <Route path="/candidate/dashboard">
+            <AuthGuard requireRole="candidate">
+              <CandidateDashboard />
             </AuthGuard>
           </Route>
 

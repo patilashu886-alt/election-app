@@ -4,16 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, CheckCircle, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function CategorySelection() {
   const [, params] = useRoute("/election/:id");
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const elections = useElectionStore(state => state.elections);
   const hasVotedCategories = useElectionStore(state => state.hasVotedCategories);
   const session = useElectionStore(state => state.session);
   
   const election = elections.find(e => e.id === params?.id);
-  if (!election) return <div>Election not found</div>;
+  if (!election) return <div>{t("categorySelection.notFound")}</div>;
 
   const allowedType = getRoleElectionType(session.role);
   if (!election.isActive || !allowedType || election.type !== allowedType) {
@@ -22,11 +24,11 @@ export function CategorySelection() {
         <div className="page-container max-w-4xl">
         <Card className="section-card">
           <CardHeader>
-            <CardTitle>Election Unavailable</CardTitle>
-            <CardDescription>This election is inactive or not available for your role.</CardDescription>
+            <CardTitle>{t("categorySelection.unavailableTitle")}</CardTitle>
+            <CardDescription>{t("categorySelection.unavailableDesc")}</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
+            <Button onClick={() => setLocation('/dashboard')}>{t("categorySelection.backDashboard")}</Button>
           </CardFooter>
         </Card>
         </div>
@@ -41,10 +43,10 @@ export function CategorySelection() {
       <div className="page-container max-w-4xl">
       <div className="mb-8">
         <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4">
-          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+          <ChevronLeft className="w-4 h-4 mr-1" /> {t("categorySelection.backDashboard")}
         </Button>
         <h1 className="text-3xl font-bold tracking-tight">{election.title}</h1>
-        <p className="text-muted-foreground mt-1">Please select a category to cast your vote.</p>
+        <p className="text-muted-foreground mt-1">{t("categorySelection.selectCategory")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -64,10 +66,10 @@ export function CategorySelection() {
               </CardHeader>
               <CardFooter className="pt-2">
                 {isVoted ? (
-                  <span className="text-sm font-medium text-success">Ballot Cast Successfully</span>
+                  <span className="text-sm font-medium text-success">{t("categorySelection.ballotCast")}</span>
                 ) : (
                   <Button variant="outline" className="w-full">
-                    View Candidates <ArrowRight className="w-4 h-4 ml-2" />
+                    {t("categorySelection.viewCandidates")} <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 )}
               </CardFooter>

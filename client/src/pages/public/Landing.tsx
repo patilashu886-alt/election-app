@@ -8,6 +8,7 @@ import {
   GraduationCap,
   Briefcase,
   Users,
+  UserRoundCheck,
   LogIn,
   X,
 } from "lucide-react";
@@ -24,10 +25,12 @@ import {
 import { auth } from "@/lib/firebase";
 import { createUser, getUserByEmail } from "@/lib/firestore-users";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export function Landing() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const login = useElectionStore((state) => state.login);
 
   // Registration states
@@ -60,17 +63,23 @@ export function Landing() {
       });
 
       toast({
-        title: "Account created",
-        description: "Account created successfully. Proceed to verification.",
+        title: t("landing.toasts.accountCreatedTitle"),
+        description: role === "Candidate"
+          ? t("landing.toasts.accountCreatedCandidate")
+          : t("landing.toasts.accountCreatedVoter"),
       });
 
       login(email, role, identifier);
-      setLocation("/verification");
+      if (role === "Candidate") {
+        setLocation("/candidate/dashboard");
+      } else {
+        setLocation("/verification");
+      }
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Signup error",
-        description: err?.message || "Failed to create account",
+        title: t("landing.toasts.signupErrorTitle"),
+        description: err?.message || t("landing.toasts.signupErrorFallback"),
       });
     }
   };
@@ -86,20 +95,23 @@ export function Landing() {
       const existingUser = await getUserByEmail(loginEmail);
 
       if (!existingUser) {
-        throw new Error("No voter profile found for this account.");
+        throw new Error(t("landing.toasts.noProfile"));
       }
 
       if (existingUser.role === "admin") {
         login(loginEmail, "admin", existingUser.identifier);
         setLocation("/admin");
+      } else if (existingUser.role === "Candidate") {
+        login(loginEmail, "Candidate", existingUser.identifier);
+        setLocation("/candidate/dashboard");
       } else {
         login(loginEmail, existingUser.role as Role, existingUser.identifier);
         setLocation("/verification");
       }
 
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: t("landing.toasts.loginSuccessTitle"),
+        description: t("landing.toasts.loginSuccessDesc"),
       });
 
       setShowLoginModal(false);
@@ -108,8 +120,8 @@ export function Landing() {
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Login failed",
-        description: err?.message || "Invalid email or password",
+        title: t("landing.toasts.loginFailedTitle"),
+        description: err?.message || t("landing.toasts.loginFailedFallback"),
       });
     } finally {
       setIsLoggingIn(false);
@@ -117,34 +129,33 @@ export function Landing() {
   };
 
   const idLabel =
-    role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Society ID";
+    role === "Student" ? t("landing.studentId") : role === "Employee" ? t("landing.employeeId") : role === "Society" ? t("landing.societyId") : t("landing.candidateId");
 
   return (
     <div className="page-shell">
       <div className="page-container">
       <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
-          <Badge className="bg-primary/10 text-primary border-primary/20">v2.0 Advanced Protocol</Badge>
-          <h1 className="text-5xl font-bold tracking-tight">Secure & Verifiable Multi-Election System</h1>
+          <Badge className="bg-primary/10 text-primary border-primary/20">{t("landing.badge")}</Badge>
+          <h1 className="text-5xl font-bold tracking-tight">{t("landing.heroTitle")}</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            The next generation of democratic participation. Unified voting for colleges, companies,
-            and societies with role-based identity management.
+            {t("landing.heroDescription")}
           </p>
           <div className="flex gap-4">
             <div className="flex items-center text-sm font-medium">
-              <ShieldCheck className="w-4 h-4 mr-2 text-success" /> Biometric Identity
+              <ShieldCheck className="w-4 h-4 mr-2 text-success" /> {t("landing.featureBiometric")}
             </div>
             <div className="flex items-center text-sm font-medium">
-              <ShieldCheck className="w-4 h-4 mr-2 text-success" /> Multi-Election Access
+              <ShieldCheck className="w-4 h-4 mr-2 text-success" /> {t("landing.featureMultiAccess")}
             </div>
           </div>
         </div>
 
         <Card className="section-card border-border/50 shadow-2xl">
           <CardHeader>
-            <CardTitle>Voter Registration</CardTitle>
+            <CardTitle>{t("landing.registerTitle")}</CardTitle>
             <CardDescription>
-              Select your role and enter your details to access active elections.
+              {t("landing.registerDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -152,28 +163,31 @@ export function Landing() {
               {/* ... your existing registration form fields remain unchanged ... */}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Select Your Role</label>
+                <label className="text-sm font-medium">{t("landing.selectRole")}</label>
                 <Tabs
                   value={role || ""}
                   onValueChange={(v) => setRole(v as Role)}
                   className="w-full"
                 >
-                  <TabsList className="grid grid-cols-3 w-full">
+                  <TabsList className="grid grid-cols-4 w-full">
                     <TabsTrigger value="Student">
-                      <GraduationCap className="w-4 h-4 mr-1 hidden sm:block" /> Student
+                      <GraduationCap className="w-4 h-4 mr-1 hidden sm:block" /> {t("landing.roles.student")}
                     </TabsTrigger>
                     <TabsTrigger value="Employee">
-                      <Briefcase className="w-4 h-4 mr-1 hidden sm:block" /> Staff
+                      <Briefcase className="w-4 h-4 mr-1 hidden sm:block" /> {t("landing.roles.staff")}
                     </TabsTrigger>
                     <TabsTrigger value="Society">
-                      <Users className="w-4 h-4 mr-1 hidden sm:block" /> Society
+                      <Users className="w-4 h-4 mr-1 hidden sm:block" /> {t("landing.roles.society")}
+                    </TabsTrigger>
+                    <TabsTrigger value="Candidate">
+                      <UserRoundCheck className="w-4 h-4 mr-1 hidden sm:block" /> {t("landing.roles.candidate")}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email Address</label>
+                <label className="text-sm font-medium">{t("landing.email")}</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -181,14 +195,14 @@ export function Landing() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
-                    placeholder="your@email.com"
+                    placeholder={t("landing.placeholders.email")}
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
+                <label className="text-sm font-medium">{t("landing.password")}</label>
                 <div className="relative">
                   <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -196,21 +210,21 @@ export function Landing() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
-                    placeholder="Create a password"
+                    placeholder={t("landing.placeholders.password")}
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Full Name</label>
+                <label className="text-sm font-medium">{t("landing.fullName")}</label>
                 <div className="relative">
                   <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="pl-10"
-                    placeholder="Your full name"
+                    placeholder={t("landing.placeholders.fullName")}
                     required
                   />
                 </div>
@@ -224,7 +238,7 @@ export function Landing() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     className="pl-10"
-                    placeholder={`Enter ${idLabel}`}
+                    placeholder={t("landing.placeholders.enter", { label: idLabel })}
                     required
                   />
                 </div>
@@ -235,18 +249,18 @@ export function Landing() {
                 className="w-full h-11"
                 disabled={!email || !identifier || !password || !name}
               >
-                Register & Verify <ArrowRight className="ml-2 h-4 w-4" />
+                {role === "Candidate" ? t("landing.registerContinue") : t("landing.registerVerify")} <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
 
               {/* New: Login link */}
               <div className="text-center text-sm text-muted-foreground mt-4">
-                Already have an account?{" "}
+                {t("landing.alreadyAccount")}{" "}
                 <Button
                   variant="link"
                   className="p-0 h-auto font-medium text-primary"
                   onClick={() => setShowLoginModal(true)}
                 >
-                  Log in
+                  {t("landing.login")}
                 </Button>
               </div>
             </form>
@@ -259,7 +273,7 @@ export function Landing() {
       <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="relative">
-            <DialogTitle>Log In to Your Account</DialogTitle>
+            <DialogTitle>{t("landing.loginModalTitle")}</DialogTitle>
             <DialogClose asChild>
               <Button variant="ghost" size="icon" className="absolute right-2 top-2">
                 <X className="h-4 w-4" />
@@ -269,7 +283,7 @@ export function Landing() {
 
           <form onSubmit={handleLogin} className="space-y-5 pt-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Email Address</label>
+              <label className="text-sm font-medium">{t("landing.email")}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -277,7 +291,7 @@ export function Landing() {
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="pl-10"
-                  placeholder="your@email.com"
+                  placeholder={t("landing.placeholders.email")}
                   required
                   autoFocus
                 />
@@ -285,7 +299,7 @@ export function Landing() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Password</label>
+              <label className="text-sm font-medium">{t("landing.password")}</label>
               <div className="relative">
                 <LogIn className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -300,17 +314,17 @@ export function Landing() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoggingIn}>
-              {isLoggingIn ? "Logging in..." : "Log In"}
+              {isLoggingIn ? t("common.status.loggingIn") : t("landing.loginButton")}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              {t("landing.dontHaveAccount")}{" "}
               <Button
                 variant="link"
                 className="p-0 h-auto text-primary"
                 onClick={() => setShowLoginModal(false)}
               >
-                Sign up
+                {t("landing.signup")}
               </Button>
             </div>
           </form>

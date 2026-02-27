@@ -1,0 +1,268 @@
+{
+  "common": {
+    "appName": "SecureVote",
+    "language": "भाषा",
+    "languages": {
+      "en": "इंग्रजी",
+      "mr": "मराठी",
+      "hi": "हिंदी"
+    },
+    "actions": {
+      "cancel": "रद्द करा",
+      "submit": "सबमिट",
+      "back": "मागे",
+      "logout": "साइन आउट",
+      "dashboard": "डॅशबोर्ड",
+      "candidate": "उमेदवार",
+      "admin": "प्रशासक"
+    },
+    "status": {
+      "pending": "प्रलंबित",
+      "approved": "मंजूर",
+      "rejected": "नाकारले",
+      "sending": "पाठवत आहे...",
+      "submitting": "सबमिट होत आहे...",
+      "loggingIn": "लॉगिन होत आहे...",
+      "signingIn": "साइन इन होत आहे..."
+    }
+  },
+  "navbar": {
+    "portal": "निवडणूक पोर्टल",
+    "adminLogin": "प्रशासक लॉगिन"
+  },
+  "notFound": {
+    "title": "404 पेज सापडले नाही",
+    "description": "हे पेज राऊटरमध्ये जोडायचे विसरलात का?"
+  },
+  "landing": {
+    "badge": "v2.0 प्रगत प्रोटोकॉल",
+    "heroTitle": "सुरक्षित आणि पडताळण्यायोग्य बहु-निवडणूक प्रणाली",
+    "heroDescription": "लोकशाही सहभागाची पुढील पिढी. महाविद्यालये, कंपन्या आणि सोसायट्यांसाठी भूमिका-आधारित ओळख व्यवस्थापनासह एकत्रित मतदान.",
+    "featureBiometric": "बायोमेट्रिक ओळख",
+    "featureMultiAccess": "बहु-निवडणूक प्रवेश",
+    "registerTitle": "वापरकर्ता नोंदणी",
+    "registerDescription": "निवडणूक सुविधांसाठी तुमची भूमिका निवडा आणि तपशील भरा.",
+    "selectRole": "तुमची भूमिका निवडा",
+    "roles": {
+      "student": "विद्यार्थी",
+      "staff": "कर्मचारी",
+      "society": "सोसायटी",
+      "candidate": "उमेदवार"
+    },
+    "email": "ईमेल पत्ता",
+    "password": "पासवर्ड",
+    "fullName": "पूर्ण नाव",
+    "studentId": "विद्यार्थी आयडी",
+    "employeeId": "कर्मचारी आयडी",
+    "societyId": "सोसायटी आयडी",
+    "candidateId": "उमेदवार आयडी",
+    "placeholders": {
+      "email": "your@email.com",
+      "password": "पासवर्ड तयार करा",
+      "fullName": "तुमचे पूर्ण नाव",
+      "enter": "{{label}} प्रविष्ट करा"
+    },
+    "registerVerify": "नोंदणी व पडताळणी",
+    "registerContinue": "नोंदणी व पुढे जा",
+    "alreadyAccount": "आधीच खाते आहे?",
+    "login": "लॉगिन",
+    "loginModalTitle": "तुमच्या खात्यात लॉगिन करा",
+    "dontHaveAccount": "खाते नाही?",
+    "signup": "साइन अप",
+    "loginButton": "लॉगिन",
+    "toasts": {
+      "accountCreatedTitle": "खाते तयार झाले",
+      "accountCreatedCandidate": "खाते यशस्वीपणे तयार झाले. उमेदवार डॅशबोर्डकडे जा.",
+      "accountCreatedVoter": "खाते यशस्वीपणे तयार झाले. पडताळणीकडे पुढे जा.",
+      "signupErrorTitle": "साइनअप त्रुटी",
+      "signupErrorFallback": "खाते तयार करता आले नाही",
+      "noProfile": "या खात्यासाठी प्रोफाइल सापडले नाही.",
+      "loginSuccessTitle": "लॉगिन यशस्वी",
+      "loginSuccessDesc": "पुन्हा स्वागत आहे!",
+      "loginFailedTitle": "लॉगिन अयशस्वी",
+      "loginFailedFallback": "ईमेल किंवा पासवर्ड चुकीचा आहे"
+    }
+  },
+  "verification": {
+    "title": "ओळख पडताळणी",
+    "description": "एक व्यक्ती एक मत सुनिश्चित करण्यासाठी आम्हाला मानक ओळख पडताळणी आवश्यक आहे.",
+    "emailTitle": "ईमेल पुष्टीकरण",
+    "emailDesc": "तुमचा नोंदणीकृत ईमेल पडताळा",
+    "emailSentMessage": "{{email}} वर पडताळणी लिंक पाठवली आहे. तुमचे खाते पडताळण्यासाठी लिंक क्लिक करा.",
+    "waiting": "ईमेल पडताळणीची प्रतीक्षा...",
+    "tipsTitle": "💡 टिप्स:",
+    "tips": {
+      "spam": "• स्पॅम/जंक फोल्डर तपासा",
+      "delay": "• पडताळणीस काही सेकंद लागू शकतात",
+      "resend": "• ईमेल दिसत नसेल तर \"ईमेल पुन्हा पाठवा\" क्लिक करा"
+    },
+    "resend": "ईमेल पुन्हा पाठवा",
+    "biometricTitle": "बायोमेट्रिक पडताळणी",
+    "biometricDesc": "तुमच्या डिव्हाइस कॅमेराचा वापर करून लाइव्हनेस तपासणी",
+    "biometricPrivacy": "तुमचा बायोमेट्रिक डेटा पूर्णपणे ब्राउझरमध्ये प्रक्रिया केला जातो आणि सर्व्हरवर साठवला जात नाही. यामुळे गोपनीयता राखली जाते आणि डुप्लिकेट मतदान रोखले जाते.",
+    "toasts": {
+      "emailVerifiedTitle": "ईमेल पडताळला गेला!",
+      "emailVerifiedDesc": "तुमचा ईमेल पुष्टी झाला आहे.",
+      "emailSentTitle": "पडताळणी ईमेल पाठवला",
+      "emailSentDesc": "{{email}} तपासा आणि पुढे जाण्यासाठी पडताळणी लिंक क्लिक करा.",
+      "errorTitle": "त्रुटी",
+      "errorFallback": "पडताळणी ईमेल पाठवण्यात अयशस्वी"
+    }
+  },
+  "camera": {
+    "permissionDenied": "कॅमेरा परवानगी नाकारली. कृपया पुढे जाण्यासाठी परवानगी द्या.",
+    "verificationFailed": "पडताळणी अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+    "verifiedTitle": "ओळख पडताळली",
+    "verifiedDesc": "तुमचा बायोमेट्रिक डेटा नोंदणीकृत प्रोफाइलशी जुळला.",
+    "capture": "ओळख कॅप्चर करा",
+    "retake": "पुन्हा घ्या",
+    "verifying": "पडताळत आहे...",
+    "submitIdentity": "ओळख सबमिट करा"
+  },
+  "voterDashboard": {
+    "title": "मतदार डॅशबोर्ड",
+    "welcome": "पुन्हा स्वागत. सक्रिय निवडणुका पहा आणि मत द्या.",
+    "identityStatus": "ओळख स्थिती",
+    "verifiedAccount": "पडताळलेले खाते",
+    "noElectionsTitle": "पात्र सक्रिय निवडणुका नाहीत",
+    "noElectionsDesc": "सध्या तुमच्या भूमिकेसाठी कोणतीही थेट निवडणूक उपलब्ध नाही.",
+    "completed": "पूर्ण",
+    "inProgress": "सुरू",
+    "notStarted": "सुरू नाही",
+    "votingProgress": "मतदान प्रगती",
+    "categoriesCount": "{{voted}}/{{total}} श्रेण्या",
+    "enterElection": "निवडणुकीत प्रवेश"
+  },
+  "categorySelection": {
+    "notFound": "निवडणूक सापडली नाही",
+    "unavailableTitle": "निवडणूक उपलब्ध नाही",
+    "unavailableDesc": "ही निवडणूक निष्क्रिय आहे किंवा तुमच्या भूमिकेसाठी उपलब्ध नाही.",
+    "backDashboard": "डॅशबोर्डकडे परत",
+    "selectCategory": "मत देण्यासाठी कृपया श्रेणी निवडा.",
+    "ballotCast": "मत यशस्वीरित्या नोंदवले",
+    "viewCandidates": "उमेदवार पहा"
+  },
+  "candidateDetail": {
+    "notFound": "सापडले नाही",
+    "unavailableTitle": "निवडणूक उपलब्ध नाही",
+    "unavailableDesc": "ही निवडणूक निष्क्रिय आहे किंवा तुमच्या भूमिकेसाठी उपलब्ध नाही.",
+    "backDashboard": "डॅशबोर्डकडे परत",
+    "votedTitle": "मत आधीच नोंदवले आहे",
+    "votedDesc": "या श्रेणीत तुम्ही आधीच मत सबमिट केले आहे.",
+    "backCategories": "श्रेण्यांकडे परत",
+    "selectCandidate": "उमेदवार निवडा",
+    "manifesto": "घोषणापत्र",
+    "advantages": "फायदे",
+    "disadvantages": "तोटे",
+    "voteFor": "{{name}} साठी मत द्या",
+    "confirmTitle": "अंतिम पुष्टी",
+    "confirmDesc": "{{category}} साठी {{candidate}} ला दिलेले तुमचे मत पुष्टी करा. हे क्रिप्टोग्राफिकरीत्या स्वाक्षरीत आणि कायमस्वरूपी आहे.",
+    "confirmVote": "सुरक्षित मत पुष्टी करा",
+    "toasts": {
+      "submittedTitle": "मत सबमिट झाले",
+      "submittedDesc": "{{name}} साठी तुमचे मत नोंदवले गेले आहे.",
+      "failedTitle": "मतदान अयशस्वी",
+      "failedDesc": "तुमचे मत सबमिट करता आले नाही."
+    }
+  },
+  "candidateDashboard": {
+    "title": "उमेदवार डॅशबोर्ड",
+    "description": "निवडणुकांसाठी अर्ज करा आणि प्रशासक मंजुरीची स्थिती पहा.",
+    "applyTitle": "निवडणुकीसाठी अर्ज करा",
+    "applyDesc": "विशिष्ट निवडणूक आणि श्रेणीसाठी तुमची उमेदवारी सबमिट करा.",
+    "election": "निवडणूक",
+    "category": "श्रेणी",
+    "candidateName": "उमेदवार नाव",
+    "partyOptional": "पक्ष (पर्यायी)",
+    "candidateStatement": "उमेदवार विधान",
+    "selectActiveElection": "सक्रिय निवडणूक निवडा",
+    "selectCategory": "श्रेणी निवडा",
+    "candidateNamePlaceholder": "तुमचे सार्वजनिक उमेदवार नाव",
+    "partyPlaceholder": "स्वतंत्र",
+    "statementPlaceholder": "मतदारांनी तुम्हालाच का निवडावे?",
+    "submitApplication": "अर्ज सबमिट करा",
+    "noActiveElections": "सध्या अर्जासाठी कोणतीही सक्रिय निवडणूक उपलब्ध नाही.",
+    "myApplications": "माझे अर्ज",
+    "myApplicationsDesc": "तुमच्या सबमिट केलेल्या अर्जांची स्थिती पहा.",
+    "noApplications": "अजून कोणताही अर्ज सबमिट केलेला नाही.",
+    "categoryAndCandidate": "श्रेणी: {{category}} • उमेदवार: {{candidate}}",
+    "toasts": {
+      "submittedTitle": "अर्ज सबमिट झाला",
+      "submittedDesc": "तुमचा अर्ज पुनरावलोकनासाठी प्रशासकाकडे पाठवला गेला आहे.",
+      "failedTitle": "सबमिशन अयशस्वी",
+      "failedDesc": "उमेदवार अर्ज सबमिट करता आला नाही."
+    }
+  },
+  "adminLogin": {
+    "title": "प्रशासक साइन इन",
+    "desc": "निवडणूक प्रशासन डॅशबोर्डसाठी सुरक्षित प्रवेश",
+    "emailLabel": "प्रशासक ईमेल",
+    "passwordLabel": "पासवर्ड",
+    "emailPlaceholder": "admin@your-org.com",
+    "signIn": "प्रशासक पॅनेलमध्ये साइन इन",
+    "areYouVoter": "तुम्ही मतदार आहात का?",
+    "goVoterPortal": "मतदार पोर्टलकडे जा",
+    "errors": {
+      "default": "लॉगिन अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "userNotFound": "या ईमेलसाठी खाते सापडले नाही.",
+      "wrongPassword": "चुकीचा पासवर्ड.",
+      "tooManyRequests": "अयशस्वी प्रयत्न खूप झाले. कृपया नंतर प्रयत्न करा.",
+      "invalidEmail": "अवैध ईमेल स्वरूप.",
+      "noAdmin": "या खात्याला प्रशासक परवानग्या नाहीत."
+    },
+    "toasts": {
+      "successTitle": "लॉगिन यशस्वी",
+      "successDesc": "निवडणूक प्रशासन पॅनेलमध्ये स्वागत",
+      "failedTitle": "प्रशासक लॉगिन अयशस्वी"
+    }
+  },
+  "adminDashboard": {
+    "title": "सिस्टम प्रशासन",
+    "description": "जागतिक निवडणूक व्यवस्थापन आणि जीवनचक्र नियंत्रण.",
+    "newElectionWizard": "नवीन निवडणूक विजार्ड",
+    "live": "LIVE",
+    "offline": "OFFLINE",
+    "categories": "श्रेण्या",
+    "ends": "समाप्त",
+    "stopElection": "निवडणूक थांबवा",
+    "startElection": "निवडणूक सुरू करा",
+    "candidateApplications": "उमेदवार अर्ज",
+    "noPendingTitle": "प्रलंबित अर्ज नाहीत",
+    "noPendingDesc": "सर्व उमेदवार अर्जांचे पुनरावलोकन झाले आहे.",
+    "email": "ईमेल:",
+    "identifier": "ओळख क्रमांक:",
+    "party": "पक्ष:",
+    "approve": "होय, मंजूर",
+    "reject": "नाही, नाकारा",
+    "resultsTitle": "श्रेणीवार रिअल-टाइम निकाल",
+    "noResultsTitle": "अजून निकाल नाहीत",
+    "noResultsDesc": "मतमोजणी निरीक्षणासाठी निवडणूक तयार करा.",
+    "liveStopped": "{{type}} निवडणूक • {{state}}",
+    "liveState": "लाईव्ह",
+    "stoppedState": "थांबलेली",
+    "noCandidates": "कोणतेही उमेदवार कॉन्फिगर केलेले नाहीत.",
+    "votes": "मते",
+    "wizardTitle": "निवडणूक निर्मिती विजार्ड",
+    "wizardDesc": "निवडणूक नियम, श्रेण्या आणि पात्रता कॉन्फिगर करा.",
+    "electionTitle": "निवडणूक शीर्षक",
+    "electionTitlePlaceholder": "उदा., वार्षिक बोर्ड पुनरावलोकन",
+    "electionType": "निवडणूक प्रकार",
+    "typeCollege": "महाविद्यालय/विद्यापीठ",
+    "typeCompany": "कॉर्पोरेट/कंपनी",
+    "typeSociety": "सोसायटी/समुदाय",
+    "votingCategoriesCandidates": "मतदान श्रेण्या आणि उमेदवार",
+    "addCategory": "श्रेणी जोडा",
+    "categoryNamePlaceholder": "श्रेणी नाव",
+    "categoryDescriptionPlaceholder": "श्रेणी वर्णन",
+    "candidates": "उमेदवार",
+    "addCandidate": "उमेदवार जोडा",
+    "candidateNamePlaceholder": "उमेदवार नाव",
+    "partyPlaceholder": "पक्ष",
+    "shortDescriptionPlaceholder": "लघु वर्णन",
+    "deployElection": "निवडणूक प्रकाशित करा",
+    "toasts": {
+      "reviewFailed": "उमेदवार अर्जाचे पुनरावलोकन करता आले नाही.",
+      "createFailed": "निवडणूक तयार करता आली नाही. तपशीलासाठी कन्सोल तपासा."
+    }
+  }
+}

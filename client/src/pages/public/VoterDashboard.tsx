@@ -30,7 +30,8 @@ export function VoterDashboard() {
   };
 
   return (
-    <div className="container py-8 max-w-6xl">
+    <div className="page-shell">
+      <div className="page-container max-w-6xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -54,7 +55,7 @@ export function VoterDashboard() {
       </div>
 
       {eligibleActiveElections.length === 0 ? (
-        <Card className="glass border-dashed">
+        <Card className="section-card border-dashed">
           <CardHeader>
             <CardTitle>No Eligible Active Elections</CardTitle>
             <CardDescription>There are no live elections available for your role right now.</CardDescription>
@@ -67,7 +68,7 @@ export function VoterDashboard() {
           const totalCategories = election.categories.length;
 
           return (
-            <Card key={election.id} className="glass overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl">
+            <Card key={election.id} className="section-card overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl">
               <CardHeader className="relative">
                 <div className="flex justify-between items-start mb-2">
                   <Badge variant="default" className="capitalize">
@@ -108,6 +109,7 @@ export function VoterDashboard() {
         })}
       </div>
       )}
+      </div>
     </div>
   );
 }

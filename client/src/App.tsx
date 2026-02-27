@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "@/lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,14 +15,25 @@ import { VoterDashboard } from "@/pages/public/VoterDashboard";
 import { CategorySelection } from "@/pages/public/CategorySelection";
 import { CandidateDetail } from "@/pages/public/CandidateDetail";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
+import { AdminLogin } from "@/pages/admin/AdminLogin";
+import { useElectionStore } from "@/store/useElectionStore";
 
 function Router() {
+  const initializeElections = useElectionStore((state) => state.initializeElections);
+  const cleanupElections = useElectionStore((state) => state.cleanupElections);
+
+  useEffect(() => {
+    initializeElections();
+    return () => cleanupElections();
+  }, [initializeElections, cleanupElections]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans text-foreground antialiased selection:bg-primary/20">
       <Navbar />
       <main className="flex-1 relative z-0">
         <Switch>
           <Route path="/" component={Landing} />
+          <Route path="/admin/login" component={AdminLogin} />
           
           <Route path="/verification">
             <AuthGuard requireRole="voter">

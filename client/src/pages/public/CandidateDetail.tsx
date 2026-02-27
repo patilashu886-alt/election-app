@@ -30,8 +30,9 @@ export function CandidateDetail() {
 
   if (!election.isActive || !allowedType || election.type !== allowedType) {
     return (
-      <div className="container py-10">
-        <Card className="glass">
+      <div className="page-shell">
+        <div className="page-container max-w-6xl">
+        <Card className="section-card">
           <CardHeader>
             <CardTitle>Election Unavailable</CardTitle>
             <CardDescription>This election is inactive or not available for your role.</CardDescription>
@@ -40,14 +41,16 @@ export function CandidateDetail() {
             <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
           </CardFooter>
         </Card>
+        </div>
       </div>
     );
   }
 
   if (hasAlreadyVoted) {
     return (
-      <div className="container py-10">
-        <Card className="glass">
+      <div className="page-shell">
+        <div className="page-container max-w-6xl">
+        <Card className="section-card">
           <CardHeader>
             <CardTitle>Vote Already Cast</CardTitle>
             <CardDescription>You have already submitted your vote in this category.</CardDescription>
@@ -56,6 +59,7 @@ export function CandidateDetail() {
             <Button onClick={() => setLocation(`/election/${election.id}`)}>Back to Categories</Button>
           </CardFooter>
         </Card>
+        </div>
       </div>
     );
   }
@@ -77,7 +81,8 @@ export function CandidateDetail() {
   };
 
   return (
-    <div className="container py-8 max-w-6xl">
+    <div className="page-shell">
+      <div className="page-container max-w-6xl">
       <div className="mb-8">
         <Button variant="ghost" onClick={() => setLocation(`/election/${election.id}`)} className="mb-4">
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Categories
@@ -92,7 +97,7 @@ export function CandidateDetail() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {category.candidates.map((candidate) => (
-          <Card key={candidate.id} className="glass flex flex-col hover:border-primary/30 transition-all">
+          <Card key={candidate.id} className="section-card flex flex-col hover:border-primary/30 transition-all">
             <div className="h-40 bg-muted relative overflow-hidden">
                <img src={candidate.imageUrl} className="w-full h-full object-cover" alt={candidate.name} />
                <Badge className="absolute top-2 right-2">{candidate.party}</Badge>
@@ -151,6 +156,7 @@ export function CandidateDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

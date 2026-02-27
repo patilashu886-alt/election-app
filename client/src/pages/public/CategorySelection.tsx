@@ -18,8 +18,9 @@ export function CategorySelection() {
   const allowedType = getRoleElectionType(session.role);
   if (!election.isActive || !allowedType || election.type !== allowedType) {
     return (
-      <div className="container py-10">
-        <Card className="glass">
+      <div className="page-shell">
+        <div className="page-container max-w-4xl">
+        <Card className="section-card">
           <CardHeader>
             <CardTitle>Election Unavailable</CardTitle>
             <CardDescription>This election is inactive or not available for your role.</CardDescription>
@@ -28,6 +29,7 @@ export function CategorySelection() {
             <Button onClick={() => setLocation('/dashboard')}>Back to Dashboard</Button>
           </CardFooter>
         </Card>
+        </div>
       </div>
     );
   }
@@ -35,7 +37,8 @@ export function CategorySelection() {
   const votedCategories = hasVotedCategories[election.id] || [];
 
   return (
-    <div className="container py-8 max-w-4xl">
+    <div className="page-shell">
+      <div className="page-container max-w-4xl">
       <div className="mb-8">
         <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4">
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
@@ -49,7 +52,7 @@ export function CategorySelection() {
           const isVoted = votedCategories.includes(category.id);
           
           return (
-            <Card key={category.id} className={`glass border-2 transition-all duration-300 ${isVoted ? 'border-success/30 bg-success/5' : 'hover:border-primary/50 cursor-pointer'}`}
+            <Card key={category.id} className={`section-card border-2 transition-all duration-300 ${isVoted ? 'border-success/30 bg-success/5' : 'hover:border-primary/50 cursor-pointer'}`}
               onClick={() => !isVoted && setLocation(`/election/${election.id}/category/${category.id}`)}
             >
               <CardHeader>
@@ -71,6 +74,7 @@ export function CategorySelection() {
             </Card>
           );
         })}
+      </div>
       </div>
     </div>
   );

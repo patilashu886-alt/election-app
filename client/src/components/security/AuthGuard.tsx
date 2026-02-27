@@ -15,7 +15,11 @@ export function AuthGuard({ children, requireRole, requireActiveElection = false
   
   useEffect(() => {
     if (!session.email) {
-      setLocation("/");
+      if (requireRole === 'admin') {
+        setLocation('/admin/login');
+      } else {
+        setLocation('/');
+      }
       return;
     }
 

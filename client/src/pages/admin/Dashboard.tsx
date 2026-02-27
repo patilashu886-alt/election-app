@@ -165,7 +165,8 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="container py-8 max-w-7xl">
+    <div className="page-shell">
+      <div className="page-container max-w-7xl">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">System Administration</h1>
@@ -178,7 +179,7 @@ export function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {elections.map((election) => (
-          <Card key={election.id} className="glass border-2">
+          <Card key={election.id} className="section-card border-2">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <Badge className="capitalize">{election.type}</Badge>
@@ -235,7 +236,7 @@ export function AdminDashboard() {
         </div>
 
         {elections.length === 0 ? (
-          <Card className="glass border-dashed">
+          <Card className="section-card border-dashed">
             <CardHeader>
               <CardTitle>No Results Yet</CardTitle>
               <CardDescription>Create an election to start monitoring vote counts.</CardDescription>
@@ -243,7 +244,7 @@ export function AdminDashboard() {
           </Card>
         ) : (
           elections.map((election) => (
-            <Card key={`results-${election.id}`} className="glass">
+            <Card key={`results-${election.id}`} className="section-card">
               <CardHeader>
                 <CardTitle>{election.title}</CardTitle>
                 <CardDescription className="capitalize">
@@ -303,7 +304,7 @@ export function AdminDashboard() {
 
       {showWizard && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+          <Card className="section-card w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
             <CardHeader>
               <CardTitle>Election Creation Wizard</CardTitle>
               <CardDescription>Configure election rules, categories, and eligibility.</CardDescription>
@@ -439,6 +440,7 @@ export function AdminDashboard() {
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 }

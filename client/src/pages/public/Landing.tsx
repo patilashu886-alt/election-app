@@ -22,7 +22,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { createUser } from "@/lib/firestore-users";
+import { createUser, getUserByEmail } from "@/lib/firestore-users";
 import { useToast } from "@/hooks/use-toast";
 
 export function Landing() {
@@ -82,22 +82,25 @@ export function Landing() {
     setIsLoggingIn(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const existingUser = await getUserByEmail(loginEmail);
 
-      // Here you should ideally fetch user data from Firestore
-      // For simplicity — assuming role & identifier are stored, but for now we can skip or mock
-      // In real app → fetch user doc and call login(email, role, identifier)
+      if (!existingUser) {
+        throw new Error("No voter profile found for this account.");
+      }
 
-      // Temporary: assume role from email or something (improve later)
-      // Better: fetch from Firestore users collection
+      if (existingUser.role === "admin") {
+        login(loginEmail, "admin", existingUser.identifier);
+        setLocation("/admin");
+      } else {
+        login(loginEmail, existingUser.role as Role, existingUser.identifier);
+        setLocation("/verification");
+      }
+
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
-
-      // For now — just mark as logged in (you'll improve this)
-      login(loginEmail, "Student", undefined); // ← replace with real role fetch
-      setLocation("/verification"); // or "/dashboard" depending on role
 
       setShowLoginModal(false);
       setLoginEmail("");
@@ -117,7 +120,8 @@ export function Landing() {
     role === "Student" ? "Student ID" : role === "Employee" ? "Employee ID" : "Society ID";
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
+    <div className="page-shell">
+      <div className="page-container">
       <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <Badge className="bg-primary/10 text-primary border-primary/20">v2.0 Advanced Protocol</Badge>
@@ -136,7 +140,7 @@ export function Landing() {
           </div>
         </div>
 
-        <Card className="glass border-border/50 shadow-2xl">
+        <Card className="section-card border-border/50 shadow-2xl">
           <CardHeader>
             <CardTitle>Voter Registration</CardTitle>
             <CardDescription>
@@ -248,6 +252,7 @@ export function Landing() {
             </form>
           </CardContent>
         </Card>
+      </div>
       </div>
 
       {/* ── Login Modal ──────────────────────────────────────────────── */}

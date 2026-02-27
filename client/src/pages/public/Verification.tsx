@@ -88,7 +88,8 @@ export function Verification() {
   };
 
   return (
-    <div className="container max-w-2xl py-12 animate-in fade-in duration-500">
+    <div className="page-shell animate-in fade-in duration-500">
+      <div className="page-container max-w-2xl">
       <div className="mb-8 space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Identity Verification</h1>
         <p className="text-muted-foreground">
@@ -98,7 +99,7 @@ export function Verification() {
 
       <div className="grid gap-6">
         {/* Step 1: Email */}
-        <Card className={`glass transition-all duration-300 ${step === 'email_sent' ? 'border-primary shadow-lg ring-1 ring-primary/20' : 'opacity-70'}`}>
+        <Card className={`section-card transition-all duration-300 ${step === 'email_sent' ? 'border-primary shadow-lg ring-1 ring-primary/20' : 'opacity-70'}`}>
           <CardHeader className="flex flex-row items-center gap-4 pb-2">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
               step === 'email_sent' ? 'bg-primary text-primary-foreground' : 'bg-success text-success-foreground'
@@ -159,7 +160,7 @@ export function Verification() {
         </Card>
 
         {/* Step 2: Camera */}
-        <Card className={`glass transition-all duration-300 ${step === 'camera_pending' ? 'border-primary shadow-lg ring-1 ring-primary/20' : step === 'email_sent' ? 'opacity-50' : ''}`}>
+        <Card className={`section-card transition-all duration-300 ${step === 'camera_pending' ? 'border-primary shadow-lg ring-1 ring-primary/20' : step === 'email_sent' ? 'opacity-50' : ''}`}>
           <CardHeader className="flex flex-row items-center gap-4 pb-2">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
               step === 'camera_pending' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
@@ -181,6 +182,7 @@ export function Verification() {
              </CardContent>
           )}
         </Card>
+      </div>
       </div>
     </div>
   );

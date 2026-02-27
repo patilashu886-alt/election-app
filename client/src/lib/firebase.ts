@@ -2,30 +2,49 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-const apiKey = String(import.meta.env.VITE_FIREBASE_API_KEY || "").trim();
-const authDomain = String(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "").trim();
-const projectId = String(import.meta.env.VITE_FIREBASE_PROJECT_ID || "").trim();
-const storageBucket = String(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "").trim();
-const messagingSenderId = String(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "").trim();
-const appId = String(import.meta.env.VITE_FIREBASE_APP_ID || "").trim();
-
-if (!apiKey) {
-  console.error(
-    "VITE_FIREBASE_API_KEY is missing. .env.local may not be loaded by Vite. import.meta.env:",
-    import.meta.env
-  );
-} else if (apiKey.length < 20) {
-  console.warn("VITE_FIREBASE_API_KEY looks unusually short; verify it in Firebase console.");
-}
-
-const firebaseConfig = {
-  apiKey,
-  authDomain,
-  projectId,
-  storageBucket,
-  messagingSenderId,
-  appId,
+const cleanEnv = (value: unknown) => {
+  const normalized = String(value ?? "")
+    .trim()
+    .replace(/^['"]+|['"]+$/g, "")
+    .trim();
+  if (!normalized || normalized.toLowerCase() === "undefined" || normalized.toLowerCase() === "null") {
+    return "";
+  }
+  return normalized;
 };
+
+const apiKey = cleanEnv(import.meta.env.VITE_FIREBASE_API_KEY);
+const authDomain = cleanEnv(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
+const projectId = cleanEnv(import.meta.env.VITE_FIREBASE_PROJECT_ID);
+const storageBucket = cleanEnv(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET);
+const messagingSenderId = cleanEnv(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID);
+const appId = cleanEnv(import.meta.env.VITE_FIREBASE_APP_ID);
+
+const isApiKeyFormatValid = /^AIza[0-9A-Za-z_-]{35}$/.test(apiKey);
+
+const firebaseConfig = isApiKeyFormatValid
+  ? {
+      apiKey,
+      authDomain,
+      projectId,
+      storageBucket,
+      messagingSenderId,
+      appId,
+    }
+  : {
+      apiKey: "AIzaSyA123456789012345678901234567890123",
+      authDomain: "demo-project.firebaseapp.com",
+      projectId: "demo-project",
+      storageBucket: "demo-project.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:1234567890abcdef123456",
+    };
+
+if (!isApiKeyFormatValid) {
+  console.error(
+    "Firebase is misconfigured: VITE_FIREBASE_API_KEY is missing/invalid. Add valid VITE_FIREBASE_* values in your .env.local and restart Vite."
+  );
+}
 
 const app = initializeApp(firebaseConfig);
 

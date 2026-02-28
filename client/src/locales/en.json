@@ -133,6 +133,17 @@
     "categoriesCount": "{{voted}}/{{total}} Categories",
     "enterElection": "Enter Election"
   },
+  "profile": {
+    "title": "My Profile",
+    "loading": "Loading profile...",
+    "notFound": "Unable to load profile.",
+    "back": "Back to dashboard",
+    "name": "Full name",
+    "email": "Email",
+    "role": "Role",
+    "identifier": "Identifier",
+    "joined": "Joined"
+  },
   "categorySelection": {
     "notFound": "Election not found",
     "unavailableTitle": "Election Unavailable",

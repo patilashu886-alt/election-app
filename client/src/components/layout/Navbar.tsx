@@ -71,9 +71,15 @@ export function Navbar() {
                   <LayoutDashboard className="w-4 h-4 mr-2" /> {t("common.actions.candidate")}
                 </Button>
               ) : (
-                <Button variant="outline" size="sm" onClick={() => setLocation('/dashboard')}>
-                  <LayoutDashboard className="w-4 h-4 mr-2" /> {t("common.actions.dashboard")}
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setLocation('/dashboard')}>
+                    <LayoutDashboard className="w-4 h-4 mr-2" /> {t("common.actions.dashboard")}
+                  </Button>
+                  {/* new profile link for voters and candidates */}
+                  <Button variant="outline" size="sm" onClick={() => setLocation('/profile')}>
+                    <UserRound className="w-4 h-4 mr-2" /> {t("profile.title")}
+                  </Button>
+                </div>
               )}
 
               <Button 

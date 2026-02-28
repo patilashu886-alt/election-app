@@ -133,6 +133,17 @@
     "categoriesCount": "{{voted}}/{{total}} श्रेण्या",
     "enterElection": "निवडणुकीत प्रवेश"
   },
+  "profile": {
+    "title": "माझे प्रोफाइल",
+    "loading": "प्रोफाइल लोड करत आहे...",
+    "notFound": "प्रोफाइल लोड करण्यात अयशस्वी.",
+    "back": "डॅशबोर्डवर परत जा",
+    "name": "पूर्ण नाव",
+    "email": "ईमेल",
+    "role": "भूमिका",
+    "identifier": "ओळख",
+    "joined": "रजिस्टर झाले"
+  },
   "categorySelection": {
     "notFound": "निवडणूक सापडली नाही",
     "unavailableTitle": "निवडणूक उपलब्ध नाही",

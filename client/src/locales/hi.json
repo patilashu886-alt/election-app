@@ -133,6 +133,17 @@
     "categoriesCount": "{{voted}}/{{total}} श्रेणियाँ",
     "enterElection": "चुनाव में प्रवेश करें"
   },
+  "profile": {
+    "title": "मेरा प्रोफ़ाइल",
+    "loading": "प्रोफ़ाइल लोड हो रही है...",
+    "notFound": "प्रोफ़ाइल लोड नहीं हो सकी।",
+    "back": "डैशबोर्ड पर वापस जाएँ",
+    "name": "पूरा नाम",
+    "email": "ईमेल",
+    "role": "भूमिका",
+    "identifier": "पहचान",
+    "joined": "शामिल हुए"
+  },
   "categorySelection": {
     "notFound": "चुनाव नहीं मिला",
     "unavailableTitle": "चुनाव उपलब्ध नहीं",

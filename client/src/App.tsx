@@ -17,6 +17,8 @@ import { CandidateDetail } from "@/pages/public/CandidateDetail";
 import { CandidateDashboard } from "@/pages/public/CandidateDashboard";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
 import { AdminLogin } from "@/pages/admin/AdminLogin";
+
+import { Profile } from "@/pages/public/Profile";
 import { useElectionStore } from "@/store/useElectionStore";
 
 function Router() {
@@ -45,6 +47,13 @@ function Router() {
           <Route path="/dashboard">
             <AuthGuard requireRole="voter">
               <VoterDashboard />
+            </AuthGuard>
+          </Route>
+
+          {/* profile page allows a logged‑in user to see their full record */}
+          <Route path="/profile">
+            <AuthGuard requireRole="voter">
+              <Profile />
             </AuthGuard>
           </Route>
 

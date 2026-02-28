@@ -1,11 +1,14 @@
 import { Link, useLocation } from "wouter";
-import { Shield, LogOut, Settings, LayoutDashboard, LogIn, UserRound } from "lucide-react";
+import { LogOut, Settings, LayoutDashboard, LogIn, UserRound } from "lucide-react";
 import { useElectionStore } from "@/store/useElectionStore";
 import { useFirebaseAuth } from "@/hooks/useFirebaseMock";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge"; // unused here but kept if you need it elsewhere
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+
+// Import your logo (adjust path if your folder structure is different)
+import logo from "@/assets/logo.png";   // ← main change here
 
 export function Navbar() {
   const [, setLocation] = useLocation();
@@ -18,9 +21,17 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 max-w-screen-2xl items-center px-4 md:px-8">
-        <Link href="/" className="mr-6 flex items-center space-x-2 transition-opacity hover:opacity-80">
-          <Shield className="h-6 w-6 text-primary" />
-          <span className="text-lg font-bold tracking-tight">{t("common.appName")}</span>
+        <Link 
+          href="/" 
+          className="mr-6 flex items-center space-x-2 transition-opacity hover:opacity-80"
+        >
+          {/* Replaced Shield icon with your custom JPEG logo */}
+          <img 
+            src={logo} 
+            alt={t("common.appName")} 
+            className="h-14 w-auto object-contain" // adjust height as needed
+          />
+         
         </Link>
         
         <div className="flex flex-1 items-center justify-end space-x-2">
@@ -65,7 +76,12 @@ export function Navbar() {
                 </Button>
               )}
 
-              <Button variant="ghost" size="icon" onClick={() => { signOut(); setLocation('/'); }} title={t("common.actions.logout")}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => { signOut(); setLocation('/'); }} 
+                title={t("common.actions.logout")}
+              >
                 <LogOut className="w-4 h-4" />
               </Button>
             </div>

@@ -39,6 +39,8 @@ export function AdminDashboard() {
   // Wizard state
   const [newTitle, setNewTitle] = useState("");
   const [newType, setNewType] = useState<ElectionType>("college");
+  const [newStartTime, setNewStartTime] = useState<string>(new Date().toISOString().slice(0, 16));
+  const [newEndTime, setNewEndTime] = useState<string>(new Date(Date.now() + 604800000).toISOString().slice(0, 16));
   const [newCategories, setNewCategories] = useState<CategoryDraft[]>([]);
 
   // Initialize / cleanup Firestore real-time listener
@@ -132,6 +134,9 @@ export function AdminDashboard() {
 
   const canCreateElection =
     !!newTitle.trim() &&
+    !!newStartTime &&
+    !!newEndTime &&
+    new Date(newStartTime) < new Date(newEndTime) &&
     newCategories.length > 0 &&
     newCategories.every(
       (category) =>
@@ -149,8 +154,8 @@ export function AdminDashboard() {
         description: `Official ${newType} election`,
         type: newType,
         isActive: false,
-        startTime: new Date().toISOString(),
-        endTime: new Date(Date.now() + 604800000).toISOString(),
+        startTime: new Date(newStartTime).toISOString(),
+        endTime: new Date(newEndTime).toISOString(),
         categories: newCategories.map((category, categoryIndex) => ({
           id: `cat-${Date.now()}-${categoryIndex}`,
           name: category.name,
@@ -174,6 +179,8 @@ export function AdminDashboard() {
       // Reset form on success
       setNewTitle("");
       setNewType("college");
+      setNewStartTime(new Date().toISOString().slice(0, 16));
+      setNewEndTime(new Date(Date.now() + 604800000).toISOString().slice(0, 16));
       setNewCategories([]);
       setShowWizard(false);
     } catch (err) {
@@ -389,6 +396,25 @@ export function AdminDashboard() {
                       <SelectItem value="society">{t("adminDashboard.typeSociety")}</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Start Date & Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={newStartTime}
+                    onChange={(e) => setNewStartTime(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>End Date & Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={newEndTime}
+                    onChange={(e) => setNewEndTime(e.target.value)}
+                  />
                 </div>
               </div>
 

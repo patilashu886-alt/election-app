@@ -17,6 +17,7 @@ import { CandidateDetail } from "@/pages/public/CandidateDetail";
 import { CandidateDashboard } from "@/pages/public/CandidateDashboard";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
 import { AdminLogin } from "@/pages/admin/AdminLogin";
+import { Privacy } from "@/pages/Privacy/Privacy";
 
 import { Profile } from "@/pages/public/Profile";
 import { useElectionStore } from "@/store/useElectionStore";
@@ -36,6 +37,10 @@ function Router() {
       <main className="flex-1 relative z-0">
         <Switch>
           <Route path="/" component={Landing} />
+          
+          {/* Added public privacy page – no AuthGuard needed */}
+          <Route path="/privacy" component={Privacy} />
+          
           <Route path="/admin/login" component={AdminLogin} />
           
           <Route path="/verification">
@@ -50,7 +55,7 @@ function Router() {
             </AuthGuard>
           </Route>
 
-          {/* profile page allows a logged‑in user to see their full record */}
+          {/* profile page allows a logged-in user to see their full record */}
           <Route path="/profile">
             <AuthGuard requireRole="voter">
               <Profile />

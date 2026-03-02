@@ -100,7 +100,7 @@ export function Profile() {
     return (
       <div className="page-shell">
         <div className="page-container max-w-lg mx-auto py-12 text-center">
-          <AlertCircle className="h-12 w-12 mx-auto text-amber-500 mb-4" />
+          <AlertCircle className="h-12 w-12 mx-auto text-warning mb-4" />
           <h2 className="text-2xl font-bold mb-3">
             {t("profile.notSignedIn") || "You're not signed in"}
           </h2>

@@ -187,7 +187,7 @@ export function Landing() {
             </div>
           </div>
 
-          <Card className="section-card border-border/50 shadow-2xl">
+          <Card className="section-card border-border/60 shadow-lg">
             <CardHeader>
               <CardTitle>{t("landing.registerTitle")}</CardTitle>
               <CardDescription>{t("landing.registerDescription")}</CardDescription>
@@ -384,7 +384,7 @@ export function Landing() {
           <div className="space-y-6 py-4">
             {/* Step 1 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+              <div className="step-icon-primary">
                 <UserPlus className="h-5 w-5" />
               </div>
               <div className="flex-1">
@@ -397,7 +397,7 @@ export function Landing() {
 
             {/* Step 2 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+              <div className="step-icon-success">
                 <Camera className="h-5 w-5" />
               </div>
               <div className="flex-1">
@@ -410,7 +410,7 @@ export function Landing() {
 
             {/* Step 3 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+              <div className="step-icon-warning">
                 <CheckCircle2 className="h-5 w-5" />
               </div>
               <div className="flex-1">

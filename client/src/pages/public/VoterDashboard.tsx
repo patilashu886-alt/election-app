@@ -34,7 +34,7 @@ export function VoterDashboard() {
   return (
     <div className="page-shell">
       <div className="page-container max-w-6xl">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 panel-elevated p-4 md:p-5">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline" className="flex items-center gap-1.5 py-1">
@@ -45,8 +45,8 @@ export function VoterDashboard() {
           <h1 className="text-3xl font-bold tracking-tight">{t("voterDashboard.title")}</h1>
           <p className="text-muted-foreground">{t("voterDashboard.welcome")}</p>
         </div>
-        <div className="bg-primary/5 border border-primary/10 rounded-lg p-3 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3.5 flex items-center gap-3 shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
@@ -70,7 +70,7 @@ export function VoterDashboard() {
           const totalCategories = election.categories.length;
 
           return (
-            <Card key={election.id} className="section-card overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl">
+            <Card key={election.id} className="section-card overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:border-primary/30">
               <CardHeader className="relative">
                 <div className="flex justify-between items-start mb-2">
                   <Badge variant="default" className="capitalize">

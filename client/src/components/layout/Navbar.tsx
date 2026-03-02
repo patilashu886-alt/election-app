@@ -44,7 +44,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/92 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="sticky top-0 z-50 w-full border-b border-primary/20 bg-gradient-to-r from-primary/16 via-background/95 to-accent/12 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-14 md:h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
@@ -145,9 +145,11 @@ export function Navbar() {
         </Button>
       </div>
 
+      <div className="h-0.5 w-full bg-gradient-to-r from-accent via-primary to-success opacity-85" />
+
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border/80 bg-background/95 px-4 py-5 space-y-4 backdrop-blur-md animate-in slide-in-from-top-5 fade-in-20">
+        <div className="md:hidden border-t border-primary/20 bg-background/90 px-4 py-5 space-y-4 backdrop-blur-md animate-in slide-in-from-top-5 fade-in-20">
           {/* Language on mobile */}
           <div className="pb-2 border-b border-border/80">
             <Select value={currentLanguage} onValueChange={(lang) => {

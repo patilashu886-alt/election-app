@@ -51,56 +51,56 @@
 }
 
 :root {
-  --background: 40 44% 97%;
-  --foreground: 219 47% 15%;
-  --card: 42 36% 99%;
-  --card-foreground: 219 47% 15%;
-  --popover: 42 36% 99%;
-  --popover-foreground: 219 47% 15%;
-  --primary: 214 63% 34%;
-  --primary-foreground: 40 55% 96%;
-  --secondary: 42 38% 92%;
-  --secondary-foreground: 217 42% 22%;
-  --muted: 42 34% 93%;
-  --muted-foreground: 217 19% 40%;
-  --accent: 38 88% 56%;
+  --background: 216 34% 93%;
+  --foreground: 221 45% 15%;
+  --card: 215 33% 98%;
+  --card-foreground: 221 45% 15%;
+  --popover: 215 33% 98%;
+  --popover-foreground: 221 45% 15%;
+  --primary: 219 68% 30%;
+  --primary-foreground: 40 42% 97%;
+  --secondary: 216 33% 87%;
+  --secondary-foreground: 222 38% 20%;
+  --muted: 215 28% 88%;
+  --muted-foreground: 217 18% 36%;
+  --accent: 34 92% 52%;
   --accent-foreground: 222 45% 18%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --warning: 38 90% 52%;
+  --warning: 35 90% 51%;
   --warning-foreground: 35 40% 14%;
-  --success: 148 58% 38%;
+  --success: 147 62% 35%;
   --success-foreground: 145 85% 96%;
-  --border: 32 24% 84%;
-  --input: 32 24% 84%;
-  --ring: 214 63% 34%;
+  --border: 216 23% 76%;
+  --input: 216 23% 76%;
+  --ring: 219 68% 30%;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 220 44% 11%;
-  --foreground: 40 42% 94%;
-  --card: 221 39% 14%;
-  --card-foreground: 40 42% 94%;
-  --popover: 221 39% 14%;
-  --popover-foreground: 40 42% 94%;
-  --primary: 211 76% 64%;
-  --primary-foreground: 221 54% 12%;
-  --secondary: 219 28% 22%;
+  --background: 220 44% 10%;
+  --foreground: 40 36% 93%;
+  --card: 220 36% 14%;
+  --card-foreground: 40 36% 93%;
+  --popover: 220 36% 14%;
+  --popover-foreground: 40 36% 93%;
+  --primary: 212 74% 62%;
+  --primary-foreground: 221 56% 11%;
+  --secondary: 219 30% 20%;
   --secondary-foreground: 40 42% 94%;
-  --muted: 219 25% 20%;
+  --muted: 219 24% 19%;
   --muted-foreground: 40 18% 70%;
-  --accent: 39 92% 61%;
+  --accent: 35 94% 58%;
   --accent-foreground: 221 54% 12%;
   --destructive: 0 68% 48%;
   --destructive-foreground: 210 40% 98%;
-  --warning: 40 92% 61%;
+  --warning: 38 92% 60%;
   --warning-foreground: 221 54% 12%;
-  --success: 148 52% 48%;
+  --success: 147 54% 47%;
   --success-foreground: 149 62% 12%;
-  --border: 219 24% 26%;
-  --input: 219 24% 26%;
-  --ring: 211 76% 64%;
+  --border: 219 25% 25%;
+  --input: 219 25% 25%;
+  --ring: 212 74% 62%;
 }
 
 @layer base {
@@ -110,8 +110,9 @@
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-primary-foreground;
     background-image:
-      radial-gradient(circle at top, hsl(var(--primary) / 0.12), transparent 45%),
-      radial-gradient(circle at bottom right, hsl(var(--accent) / 0.1), transparent 40%);
+      linear-gradient(180deg, hsl(var(--primary) / 0.16) 0%, hsl(var(--background)) 24%, hsl(var(--background)) 76%, hsl(var(--accent) / 0.11) 100%),
+      radial-gradient(circle at 12% 6%, hsl(var(--primary) / 0.18), transparent 38%),
+      radial-gradient(circle at 88% 94%, hsl(var(--success) / 0.12), transparent 34%);
     background-attachment: fixed;
   }
 }
@@ -131,6 +132,11 @@
 
 .page-shell {
   @apply min-h-[calc(100vh-4rem)] px-4 py-8 md:px-8 md:py-10;
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.18) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: -1px -1px;
 }
 
 .page-container {
@@ -138,11 +144,15 @@
 }
 
 .section-card {
-  @apply border-border/70 bg-card/95 backdrop-blur shadow-sm;
+  @apply border-border/80 bg-card/93 backdrop-blur shadow-md;
 }
 
 .civic-surface {
   @apply bg-card/75 border border-border/70 backdrop-blur-md;
+}
+
+.panel-elevated {
+  @apply rounded-xl border border-primary/15 bg-gradient-to-br from-card via-card/95 to-secondary/45 shadow-md;
 }
 
 .step-icon {

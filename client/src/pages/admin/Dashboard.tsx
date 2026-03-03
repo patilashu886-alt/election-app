@@ -193,7 +193,7 @@ export function AdminDashboard() {
   return (
     <div className="page-shell">
       <div className="page-container max-w-7xl">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8 panel-elevated p-4 md:p-5">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">{t("adminDashboard.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("adminDashboard.description")}</p>
@@ -205,7 +205,7 @@ export function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {elections.map((election) => (
-          <Card key={election.id} className="section-card border-2">
+          <Card key={election.id} className="section-card border-2 transition-all duration-300 hover:shadow-xl hover:border-primary/35 hover:-translate-y-0.5">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <Badge className="capitalize">{election.type}</Badge>
@@ -267,7 +267,7 @@ export function AdminDashboard() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {pendingApplications.map((application) => (
-              <Card key={application.id} className="section-card">
+              <Card key={application.id} className="section-card transition-all duration-300 hover:shadow-lg hover:border-primary/25">
                 <CardHeader>
                   <CardTitle className="text-lg">{application.candidateName}</CardTitle>
                   <CardDescription>
@@ -331,7 +331,7 @@ export function AdminDashboard() {
                   };
 
                   return (
-                    <div key={category.id} className="rounded-lg border border-border/50 p-4">
+                    <div key={category.id} className="rounded-lg border border-border/70 bg-secondary/35 p-4">
                       <div className="mb-3">
                         <h3 className="font-semibold">{category.name}</h3>
                         <p className="text-xs text-muted-foreground">{category.description}</p>
@@ -368,7 +368,7 @@ export function AdminDashboard() {
       </div>
 
       {showWizard && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-primary/15 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="section-card w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
             <CardHeader>
               <CardTitle>{t("adminDashboard.wizardTitle")}</CardTitle>

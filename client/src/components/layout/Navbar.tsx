@@ -44,7 +44,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="sticky top-0 z-50 w-full border-b border-primary/20 bg-gradient-to-r from-primary/16 via-background/95 to-accent/12 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-14 md:h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
@@ -57,7 +57,7 @@ export function Navbar() {
             className="h-9 sm:h-10 md:h-11 w-auto object-contain"
           />
           {/* Optional: show app name beside logo on larger screens */}
-          <span className="hidden md:inline-block text-lg font-semibold">
+          <span className="hidden md:inline-block text-lg font-semibold tracking-tight text-primary">
             {t("common.appNameShort", t("common.appName"))}
           </span>
         </Link>
@@ -66,7 +66,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           {/* Language selector */}
           <Select value={currentLanguage} onValueChange={(lang) => i18n.changeLanguage(lang)}>
-            <SelectTrigger className="h-9 w-[110px] text-sm">
+            <SelectTrigger className="h-9 w-[110px] text-sm civic-surface">
               <Globe className="mr-1.5 h-4 w-4" />
               <SelectValue />
             </SelectTrigger>
@@ -145,11 +145,13 @@ export function Navbar() {
         </Button>
       </div>
 
+      <div className="h-0.5 w-full bg-gradient-to-r from-accent via-primary to-success opacity-85" />
+
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-background px-4 py-5 space-y-4 animate-in slide-in-from-top-5 fade-in-20">
+        <div className="md:hidden border-t border-primary/20 bg-background/90 px-4 py-5 space-y-4 backdrop-blur-md animate-in slide-in-from-top-5 fade-in-20">
           {/* Language on mobile */}
-          <div className="pb-2 border-b">
+          <div className="pb-2 border-b border-border/80">
             <Select value={currentLanguage} onValueChange={(lang) => {
               i18n.changeLanguage(lang);
               setMobileMenuOpen(false);

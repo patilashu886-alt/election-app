@@ -167,27 +167,27 @@ export function Landing() {
 
   return (
     <div className="page-shell">
-      <div className="page-container">
-        <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
+      <div className="page-container max-w-6xl">
+        <div className="w-full grid md:grid-cols-2 gap-10 lg:gap-14 items-start lg:items-center">
+          <div className="space-y-6 panel-elevated p-6 md:p-8">
             <Badge className="bg-primary/10 text-primary border-primary/20">
               {t("landing.badge")}
             </Badge>
-            <h1 className="text-5xl font-bold tracking-tight">{t("landing.heroTitle")}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">{t("landing.heroTitle")}</h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
               {t("landing.heroDescription")}
             </p>
-            <div className="flex gap-4 flex-wrap">
-              <div className="flex items-center text-sm font-medium">
+            <div className="flex gap-3 flex-wrap pt-1">
+              <div className="flex items-center text-sm font-medium rounded-full border border-success/25 bg-success/10 px-3 py-1.5">
                 <ShieldCheck className="w-4 h-4 mr-2 text-success" /> {t("landing.featureBiometric")}
               </div>
-              <div className="flex items-center text-sm font-medium">
+              <div className="flex items-center text-sm font-medium rounded-full border border-success/25 bg-success/10 px-3 py-1.5">
                 <ShieldCheck className="w-4 h-4 mr-2 text-success" /> {t("landing.featureMultiAccess")}
               </div>
             </div>
           </div>
 
-          <Card className="section-card border-border/50 shadow-2xl">
+          <Card className="section-card border-border/70 shadow-xl">
             <CardHeader>
               <CardTitle>{t("landing.registerTitle")}</CardTitle>
               <CardDescription>{t("landing.registerDescription")}</CardDescription>
@@ -201,7 +201,7 @@ export function Landing() {
                     onValueChange={(v) => setRole(v as Role)}
                     className="w-full"
                   >
-                    <TabsList className="grid grid-cols-4 w-full">
+                    <TabsList className="grid grid-cols-4 w-full h-auto p-1.5">
                       <TabsTrigger value="Student">
                         <GraduationCap className="w-4 h-4 mr-1 hidden sm:block" />{" "}
                         {t("landing.roles.student")}
@@ -384,7 +384,7 @@ export function Landing() {
           <div className="space-y-6 py-4">
             {/* Step 1 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+              <div className="step-icon-primary">
                 <UserPlus className="h-5 w-5" />
               </div>
               <div className="flex-1">
@@ -397,7 +397,7 @@ export function Landing() {
 
             {/* Step 2 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+              <div className="step-icon-success">
                 <Camera className="h-5 w-5" />
               </div>
               <div className="flex-1">
@@ -410,7 +410,7 @@ export function Landing() {
 
             {/* Step 3 */}
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+              <div className="step-icon-warning">
                 <CheckCircle2 className="h-5 w-5" />
               </div>
               <div className="flex-1">
